@@ -51,8 +51,18 @@ class OhHellGame {
 	initializeGame() {
         // Clear the container and set up the main game layout
         this.container.innerHTML = `
+            <style>
+                button {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                button:hover {
+                    opacity: 0.9;
+                    transform: scale(1.02);
+                }
+            </style>
             <div class="game-container" style="padding: 20px; font-family: Arial, sans-serif;">
-                <h2 style="text-align: center;">Round ${this.currentRound}</h2>
+			<h2 style="text-align: center;">Round ${this.currentRound}</h2>
                 
                 <!-- Game board -->
                 <div style="position: relative; min-height: 600px; border: 1px solid #ddd; border-radius: 8px; margin: 20px 0; padding: 20px;">
@@ -80,10 +90,19 @@ class OhHellGame {
                         <div id="trump-display"></div>
                     </div>
                     
-                    <!-- Center area -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                     <!-- Center area -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+                        <!-- Bidding interface - above the card slot -->
+                        <div id="bidding-interface" style="display: none; padding: 20px; background: rgba(255, 255, 255, 0.95); border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: absolute; left: 50%; transform: translateX(-50%); top: -80px; z-index: 1000;">
+                            <h3>Place Your Bid</h3>
+                            <p>Cards in hand: <span id="cards-in-hand">0</span></p>
+                            <p>Trump suit: <span id="trump-reminder"></span></p>
+                            <input type="number" id="bid-input" min="0" max="13" value="0" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                            <button id="submit-bid" style="padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s; border: none; background-color: #0073b1; color: white;">Submit Bid</button>
+                        </div>
+
                         <!-- Card placement slot -->
-                        <div id="card-slot" style="width: 100px; height: 140px; border: 2px dashed #0073b1; border-radius: 8px; margin: 0 auto 20px; display: none;">
+                        <div id="card-slot" style="width: 100px; height: 140px; border: 2px dashed #0073b1; border-radius: 8px; margin: 0 auto 20px; display: none; background: rgba(0, 115, 177, 0.1);">
                             <div style="height: 100%; display: flex; align-items: center; justify-content: center; color: #0073b1;">
                                 Drop card here
                             </div>
@@ -91,23 +110,14 @@ class OhHellGame {
                         
                         <!-- Card confirmation -->
                         <div id="card-confirmation" style="display: none; margin-bottom: 20px;">
-                            <button id="confirm-card" style="margin-right: 10px;">Play Card</button>
-                            <button id="cancel-card">Cancel</button>
+                            <button id="confirm-card" class="game-button" style="margin-right: 10px; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s; border: none; background-color: #0073b1; color: white;">Play Card</button>
+                            <button id="cancel-card" class="game-button" style="padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s; border: none; background-color: #666; color: white;">Cancel</button>
                         </div>
                         
                         <!-- Trick area -->
-                        <div id="trick-area" style="width: 300px; height: 200px; border: 2px solid #ddd; border-radius: 8px;"></div>
-                        
-                        <!-- Centered bidding interface -->
-                        <div id="bidding-interface" style="display: none; margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.95); border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-                            <h3>Place Your Bid</h3>
-                            <p>Cards in hand: <span id="cards-in-hand">0</span></p>
-                            <p>Trump suit: <span id="trump-reminder"></span></p>
-                            <input type="number" id="bid-input" min="0" max="13" value="0" style="width: 60px;">
-                            <button id="submit-bid">Submit Bid</button>
-                        </div>
+                        <div id="trick-area" style="width: 300px; height: 200px; border: 2px solid #ddd; border-radius: 8px; margin: 0 auto;"></div>
                     </div>
-                    
+                        
                     <!-- Player area -->
                     <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
                         <div id="player-info"></div>
@@ -313,43 +323,7 @@ class OhHellGame {
             });
         });
     }
-    
-    handleCardMouseDown(e, index) {
-        if (this.currentPlayer !== 0 || this.biddingPhase) return;
-        
-        const card = this.playerHand[index];
-        if (!this.isCardPlayable(card)) {
-            alert('You must follow suit if possible!');
-            return;
-        }
-        
-        this.isDragging = true;
-        this.draggedCard = { card, index };
-        const rect = e.target.getBoundingClientRect();
-        this.dragOffset = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
-        this.lastMousePos = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        
-        // Show the card slot
-        const cardSlot = document.getElementById('card-slot');
-        cardSlot.style.display = 'block';
-        
-        // Create floating card
-        const floatingCard = this.createCardElement(card);
-        floatingCard.id = 'floating-card';
-        floatingCard.style.position = 'fixed';
-        floatingCard.style.zIndex = 1000;
-        floatingCard.style.pointerEvents = 'none';
-        document.body.appendChild(floatingCard);
-        
-        this.updateFloatingCardPosition(e);
-    }
-    
+       
     handleMouseMove(e) {
         if (!this.isDragging) return;
         
@@ -387,8 +361,17 @@ class OhHellGame {
             const slotRect = cardSlot.getBoundingClientRect();
             const cardRect = floatingCard.getBoundingClientRect();
             
-            if (this.isOverlapping(cardRect, slotRect)) {
-                // Card was dropped in the slot
+            // Add a generous tolerance for the drop zone
+            const tolerance = 50;
+            const isNearSlot = (
+                cardRect.left < slotRect.right + tolerance &&
+                cardRect.right > slotRect.left - tolerance &&
+                cardRect.top < slotRect.bottom + tolerance &&
+                cardRect.bottom > slotRect.top - tolerance
+            );
+            
+            if (isNearSlot) {
+                // Card was dropped near the slot
                 this.selectedCard = this.draggedCard.index;
                 
                 // Show the dropped card in the slot
@@ -398,6 +381,10 @@ class OhHellGame {
                 
                 // Show confirmation buttons
                 document.getElementById('card-confirmation').style.display = 'block';
+                
+                // Hide other cards in hand temporarily
+                const playerHand = document.getElementById('player-hand');
+                playerHand.style.opacity = '0.5';
             }
             
             floatingCard.remove();
@@ -405,6 +392,53 @@ class OhHellGame {
         
         this.isDragging = false;
         this.draggedCard = null;
+    }
+
+    handleCardMouseDown(e, index) {
+        if (this.currentPlayer !== 0 || this.biddingPhase) return;
+        
+        const card = this.playerHand[index];
+        if (!this.isCardPlayable(card)) {
+            alert('You must follow suit if possible!');
+            return;
+        }
+        
+        this.isDragging = true;
+        this.draggedCard = { card, index };
+        const rect = e.target.getBoundingClientRect();
+        this.dragOffset = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+        this.lastMousePos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        
+        // Show the card slot
+        const cardSlot = document.getElementById('card-slot');
+        cardSlot.style.display = 'flex';  // Changed to flex for better centering
+        cardSlot.style.background = 'rgba(0, 115, 177, 0.1)';
+        
+        // Create floating card
+        const floatingCard = this.createCardElement(card);
+        floatingCard.id = 'floating-card';
+        floatingCard.style.position = 'fixed';
+        floatingCard.style.zIndex = 1000;
+        floatingCard.style.pointerEvents = 'none';
+        floatingCard.style.cursor = 'grabbing';
+        document.body.appendChild(floatingCard);
+        
+        this.updateFloatingCardPosition(e);
+    }
+
+    clearSelectedCard() {
+        this.selectedCard = null;
+        document.getElementById('card-slot').style.display = 'none';
+        document.getElementById('card-confirmation').style.display = 'none';
+        const playerHand = document.getElementById('player-hand');
+        playerHand.style.opacity = '1';  // Restore hand opacity
+        this.renderPlayerHand();
     }
     
     renderTrick() {
