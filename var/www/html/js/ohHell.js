@@ -21,11 +21,34 @@ class OhHellGame {
         this.draggedCard = null;
         this.dragOffset = { x: 0, y: 0 };
         this.lastMousePos = { x: 0, y: 0 };
+        this.selectedCard = null;
+        this.setupCardHandling();
         
         this.initializeGame();
     }
-    
-    initializeGame() {
+
+    setupCardHandling() {
+        // Set up event listeners for card confirmation
+        document.getElementById('confirm-card')?.addEventListener('click', () => {
+            if (this.selectedCard !== null) {
+                this.playCard(this.selectedCard);
+                this.clearSelectedCard();
+            }
+        });
+
+        document.getElementById('cancel-card')?.addEventListener('click', () => {
+            this.clearSelectedCard();
+        });
+    }
+	
+    clearSelectedCard() {
+        this.selectedCard = null;
+        document.getElementById('card-slot').style.display = 'none';
+        document.getElementById('card-confirmation').style.display = 'none';
+        this.renderPlayerHand(); // Reset hand display
+    }
+	
+initializeGame() {
         // Clear the container and set up the main game layout
         this.container.innerHTML = `
             <div class="game-container" style="padding: 20px; font-family: Arial, sans-serif;">
@@ -50,14 +73,39 @@ class OhHellGame {
                         <div id="right-ai-info"></div>
                         <div id="right-ai-cards"></div>
                     </div>
+
+                    <!-- Trump display in top right -->
+                    <div style="position: absolute; top: 20px; right: 20px; text-align: center;">
+                        <div style="margin-bottom: 10px; font-weight: bold;">Trump Suit:</div>
+                        <div id="trump-display"></div>
+                    </div>
                     
                     <!-- Center area -->
                     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                        <!-- Trump card and deck -->
-                        <div id="trump-deck" style="margin-bottom: 20px;"></div>
+                        <!-- Card placement slot -->
+                        <div id="card-slot" style="width: 100px; height: 140px; border: 2px dashed #0073b1; border-radius: 8px; margin: 0 auto 20px; display: none;">
+                            <div style="height: 100%; display: flex; align-items: center; justify-content: center; color: #0073b1;">
+                                Drop card here
+                            </div>
+                        </div>
+                        
+                        <!-- Card confirmation -->
+                        <div id="card-confirmation" style="display: none; margin-bottom: 20px;">
+                            <button id="confirm-card" style="margin-right: 10px;">Play Card</button>
+                            <button id="cancel-card">Cancel</button>
+                        </div>
                         
                         <!-- Trick area -->
-                        <div id="trick-area" style="width: 300px; height: 200px; border: 2px dashed #ccc; border-radius: 8px;"></div>
+                        <div id="trick-area" style="width: 300px; height: 200px; border: 2px solid #ddd; border-radius: 8px;"></div>
+                        
+                        <!-- Centered bidding interface -->
+                        <div id="bidding-interface" style="display: none; margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.95); border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                            <h3>Place Your Bid</h3>
+                            <p>Cards in hand: <span id="cards-in-hand">0</span></p>
+                            <p>Trump suit: <span id="trump-reminder"></span></p>
+                            <input type="number" id="bid-input" min="0" max="13" value="0" style="width: 60px;">
+                            <button id="submit-bid">Submit Bid</button>
+                        </div>
                     </div>
                     
                     <!-- Player area -->
@@ -65,13 +113,6 @@ class OhHellGame {
                         <div id="player-info"></div>
                         <div id="player-hand" style="min-height: 150px;"></div>
                     </div>
-                </div>
-                
-                <!-- Bidding interface -->
-                <div id="bidding-interface" style="text-align: center; margin-top: 20px;">
-                    <h3>Place Your Bid</h3>
-                    <input type="number" id="bid-input" min="0" max="13" value="0" style="width: 60px;">
-                    <button id="submit-bid">Submit Bid</button>
                 </div>
                 
                 <!-- Score summary -->
@@ -95,7 +136,6 @@ class OhHellGame {
         this.startNewRound();
     }
     
-    
     setupEventListeners() {
         document.getElementById('submit-bid')?.addEventListener('click', () => this.submitBid());
         
@@ -109,6 +149,8 @@ class OhHellGame {
         summaryTable.innerHTML = this.playerNames.map((name, i) => `
             <tr>
                 <td style="padding: 8px; border: 1px solid #ddd;">${name}${i === this.dealer ? ' (Dealer)' : ''}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${this.bids[i]}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${this.tricks[i]}</td>
                 <td style="padding: 8px; border: 1px solid #ddd;">${this.scores[i]}</td>
             </tr>
         `).join('');
@@ -144,34 +186,22 @@ class OhHellGame {
         }
         return array;
     }
-	
-    renderTrumpDeck(remainingCards) {
-        const trumpDeck = document.getElementById('trump-deck');
-        trumpDeck.innerHTML = '';
-        
-        // Create deck appearance
-        for (let i = 0; i < Math.min(remainingCards, 5); i++) {
-            const deckCard = document.createElement('div');
-            deckCard.className = 'deck-card';
-            deckCard.style.position = 'absolute';
-            deckCard.style.width = '100px';
-            deckCard.style.height = '140px';
-            deckCard.style.border = '1px solid #000';
-            deckCard.style.borderRadius = '5px';
-            deckCard.style.backgroundColor = '#fff';
-            deckCard.style.transform = `translateY(${i * -1}px)`;
-            deckCard.style.backgroundImage = 'linear-gradient(45deg, #fff 45%, #ddd 50%, #fff 55%)';
-            trumpDeck.appendChild(deckCard);
+
+	updateTrumpDisplay() {
+        const trumpDisplay = document.getElementById('trump-display');
+        const trumpReminder = document.getElementById('trump-reminder');
+        if (this.trumpCard) {
+            const trumpElement = this.createCardElement(this.trumpCard);
+            trumpElement.style.transform = 'scale(0.8)';
+            trumpDisplay.innerHTML = '';
+            trumpDisplay.appendChild(trumpElement);
+            if (trumpReminder) {
+                trumpReminder.textContent = `${this.trumpCard.suit}`;
+            }
         }
-        
-        // Add trump card on top
-        const trumpCardElement = this.createCardElement(this.trumpCard);
-        trumpCardElement.style.position = 'absolute';
-        trumpCardElement.style.transform = 'translateY(-6px)';
-        trumpDeck.appendChild(trumpCardElement);
     }
 
-	updatePlayerInfo() {
+    updatePlayerInfo() {
         const playerInfo = document.getElementById('player-info');
         if (playerInfo) {
             playerInfo.innerHTML = `
@@ -183,12 +213,12 @@ class OhHellGame {
     }
 
     renderGameState() {
-        // Render all hands and trick area
         this.renderPlayerHand();
         this.renderAiHands();
         this.renderTrick();
         this.updatePlayerInfo();
         this.updateScoreDisplay();
+        this.updateTrumpDisplay();
     }
     
     createCardElement(card, index = null) {
@@ -210,9 +240,9 @@ class OhHellGame {
         }
         
         cardElement.innerHTML = `
-            <div style="position: absolute; top: 5px; left: 5px;">${card.value}${card.suit}</div>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px;">${card.suit}</div>
-            <div style="position: absolute; bottom: 5px; right: 5px; transform: rotate(180deg);">${card.value}${card.suit}</div>
+            <div style="position: absolute; top: 5px; left: 5px; font-size: 20px; font-weight: bold;">${card.value}${card.suit}</div>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px;">${card.suit}</div>
+            <div style="position: absolute; bottom: 5px; right: 5px; transform: rotate(180deg); font-size: 20px; font-weight: bold;">${card.value}${card.suit}</div>
         `;
         
         return cardElement;
@@ -288,6 +318,10 @@ class OhHellGame {
             y: e.clientY
         };
         
+        // Show the card slot
+        const cardSlot = document.getElementById('card-slot');
+        cardSlot.style.display = 'block';
+        
         // Create floating card
         const floatingCard = this.createCardElement(card);
         floatingCard.id = 'floating-card';
@@ -332,13 +366,21 @@ class OhHellGame {
         
         const floatingCard = document.getElementById('floating-card');
         if (floatingCard) {
-            const trickArea = document.getElementById('trick-area');
-            const trickRect = trickArea.getBoundingClientRect();
+            const cardSlot = document.getElementById('card-slot');
+            const slotRect = cardSlot.getBoundingClientRect();
             const cardRect = floatingCard.getBoundingClientRect();
             
-            // Check if card is dropped in trick area
-            if (this.isOverlapping(cardRect, trickRect)) {
-                this.playCard(this.draggedCard.index);
+            if (this.isOverlapping(cardRect, slotRect)) {
+                // Card was dropped in the slot
+                this.selectedCard = this.draggedCard.index;
+                
+                // Show the dropped card in the slot
+                cardSlot.innerHTML = '';
+                const slottedCard = this.createCardElement(this.draggedCard.card);
+                cardSlot.appendChild(slottedCard);
+                
+                // Show confirmation buttons
+                document.getElementById('card-confirmation').style.display = 'block';
             }
             
             floatingCard.remove();
@@ -346,13 +388,6 @@ class OhHellGame {
         
         this.isDragging = false;
         this.draggedCard = null;
-    }
-    
-    isOverlapping(rect1, rect2) {
-        return !(rect1.right < rect2.left || 
-                rect1.left > rect2.right || 
-                rect1.bottom < rect2.top || 
-                rect1.top > rect2.bottom);
     }
     
     renderTrick() {
@@ -375,25 +410,24 @@ class OhHellGame {
         });
     }
     
-	showBiddingInterface() {
+    showBiddingInterface() {
         const biddingInterface = document.getElementById('bidding-interface');
         if (biddingInterface) {
             biddingInterface.style.display = 'block';
             const bidInput = document.getElementById('bid-input');
+            const cardsInHand = document.getElementById('cards-in-hand');
             if (bidInput) {
                 bidInput.max = this.currentRound;
                 bidInput.value = '0';
             }
-            // Add debug output
-            console.log('Showing bidding interface');
-            console.log('Current round:', this.currentRound);
-            console.log('Player hand:', this.playerHand);
-        } else {
-            console.error('Bidding interface not found');
+            if (cardsInHand) {
+                cardsInHand.textContent = this.currentRound;
+            }
+            this.updateTrumpDisplay();
         }
     }
 
-    startNewRound() {
+	startNewRound() {
         console.log('Starting new round:', this.currentRound);
         this.playerHand = [];
         this.aiHands = [[], [], []];
@@ -421,9 +455,8 @@ class OhHellGame {
             }
         }
         
-        // Set trump card and show deck
+        // Set trump card (no need to show deck anymore)
         this.trumpCard = deck.pop();
-        this.renderTrumpDeck(deck.length);
         
         this.currentPlayer = (this.dealer + 1) % 4;
         
@@ -431,7 +464,7 @@ class OhHellGame {
         console.log('Player hand after dealing:', this.playerHand);
         console.log('Current player:', this.currentPlayer);
         
-        // Render the game state
+        // Render the game state (which now includes updating the trump display)
         this.renderGameState();
         
         // Show bidding interface or start AI bidding
@@ -495,8 +528,13 @@ class OhHellGame {
         this.playerHand.splice(index, 1);
         this.renderGameState();
         
+        // Ensure we're actually progressing to AI play
         this.currentPlayer = 1;
-        setTimeout(() => this.aiPlay(), 1000);
+        console.log('Playing AI turn after player card');
+        setTimeout(() => {
+            console.log('AI play triggered');
+            this.aiPlay();
+        }, 1000);
     }
     
     aiPlay() {
