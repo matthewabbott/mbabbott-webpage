@@ -48,7 +48,7 @@ class OhHellGame {
         this.renderPlayerHand(); // Reset hand display
     }
 	
-initializeGame() {
+	initializeGame() {
         // Clear the container and set up the main game layout
         this.container.innerHTML = `
             <div class="game-container" style="padding: 20px; font-family: Arial, sans-serif;">
@@ -127,6 +127,23 @@ initializeGame() {
                             </tr>
                         </thead>
                         <tbody id="score-summary"></tbody>
+                    </table>
+                </div>
+
+                <!-- Round History -->
+                <div class="score-table-container" style="margin-top: 20px;">
+                    <h3>Round History</h3>
+                    <table class="score-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Round</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Player</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Bid</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Tricks</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table"></tbody>
                     </table>
                 </div>
             </div>
@@ -411,21 +428,51 @@ initializeGame() {
     }
     
     showBiddingInterface() {
+        console.log('Showing bidding interface');
         const biddingInterface = document.getElementById('bidding-interface');
         if (biddingInterface) {
+            console.log('Found bidding interface element');
             biddingInterface.style.display = 'block';
             const bidInput = document.getElementById('bid-input');
             const cardsInHand = document.getElementById('cards-in-hand');
             if (bidInput) {
                 bidInput.max = this.currentRound;
                 bidInput.value = '0';
+            } else {
+                console.error('Bid input element not found');
             }
             if (cardsInHand) {
                 cardsInHand.textContent = this.currentRound;
+            } else {
+                console.error('Cards in hand element not found');
             }
             this.updateTrumpDisplay();
+        } else {
+            console.error('Bidding interface element not found');
         }
     }
+
+    updateTrumpDisplay() {
+        console.log('Updating trump display');
+        const trumpDisplay = document.getElementById('trump-display');
+        const trumpReminder = document.getElementById('trump-reminder');
+        if (this.trumpCard) {
+            console.log('Trump card is:', this.trumpCard);
+            const trumpElement = this.createCardElement(this.trumpCard);
+            trumpElement.style.transform = 'scale(0.8)';
+            if (trumpDisplay) {
+                trumpDisplay.innerHTML = '';
+                trumpDisplay.appendChild(trumpElement);
+            } else {
+                console.error('Trump display element not found');
+            }
+            if (trumpReminder) {
+                trumpReminder.textContent = `${this.trumpCard.suit}`;
+            }
+        } else {
+            console.error('No trump card set');
+        }
+	}
 
 	startNewRound() {
         console.log('Starting new round:', this.currentRound);
