@@ -29,16 +29,39 @@ class OhHellGame {
 
     setupCardHandling() {
         // Set up event listeners for card confirmation
-        document.getElementById('confirm-card')?.addEventListener('click', () => {
-            if (this.selectedCard !== null) {
-                this.playCard(this.selectedCard);
-                this.clearSelectedCard();
-            }
-        });
+        const confirmButton = document.getElementById('confirm-card');
+        const cancelButton = document.getElementById('cancel-card');
+        
+        if (confirmButton) {
+            confirmButton.addEventListener('click', () => {
+                console.log('Confirm clicked, selectedCard:', this.selectedCard);
+                if (this.selectedCard !== null) {
+                    this.playCard(this.selectedCard);
+                    this.clearSelectedCard();
+                }
+            });
+        }
 
-        document.getElementById('cancel-card')?.addEventListener('click', () => {
-            this.clearSelectedCard();
-        });
+        if (cancelButton) {
+            cancelButton.addEventListener('click', () => {
+                console.log('Cancel clicked');
+                this.clearSelectedCard();
+            });
+        }
+    }
+    
+    setupEventListeners() {
+        const bidButton = document.getElementById('submit-bid');
+        if (bidButton) {
+            bidButton.addEventListener('click', () => this.submitBid());
+        }
+        
+        // Setup drag events on container
+        this.container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        this.container.addEventListener('mouseup', () => this.handleMouseUp());
+        
+        // Re-setup card handling since elements might have been recreated
+        this.setupCardHandling();
     }
 	
     clearSelectedCard() {
@@ -162,15 +185,7 @@ class OhHellGame {
         this.setupEventListeners();
         this.startNewRound();
     }
-    
-    setupEventListeners() {
-        document.getElementById('submit-bid')?.addEventListener('click', () => this.submitBid());
-        
-        // Setup drag events on container
-        this.container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        this.container.addEventListener('mouseup', () => this.handleMouseUp());
-    }
-    
+       
     updateScoreDisplay() {
         const summaryTable = document.getElementById('score-summary');
         summaryTable.innerHTML = this.playerNames.map((name, i) => `
@@ -246,6 +261,7 @@ class OhHellGame {
         this.updatePlayerInfo();
         this.updateScoreDisplay();
         this.updateTrumpDisplay();
+        this.setupCardHandling();  // Re-setup handlers after rendering
     }
     
     createCardElement(card, index = null) {
