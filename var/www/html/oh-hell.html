@@ -11,23 +11,109 @@
             color: #333;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
+        
         .game-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
+        
         .nav-link {
             display: inline-block;
             text-decoration: none;
             color: #0073b1;
             margin-bottom: 20px;
         }
+        
         .nav-link:hover {
             text-decoration: underline;
+        }
+        
+        #trick-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+        
+        .card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        #floating-card {
+            pointer-events: none;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .score-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .score-table th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 1;
+        }
+        
+        #player-hand {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            min-height: 160px;
+        }
+        
+        #trick-area {
+            margin: 20px auto;
+            width: 400px;
+            height: 300px;
+            position: relative;
+        }
+        
+        .player-info {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .current-player {
+            color: #0073b1;
+            text-decoration: underline;
+        }
+        
+        button {
+            background-color: #0073b1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: #005582;
+        }
+        
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -38,7 +124,26 @@
     <script src="/js/ohHell.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            new OhHellGame('game-container');
+            const container = document.getElementById('game-container');
+            container.innerHTML = `
+                <div class="game-container">
+                    <h1>Oh Hell Card Game</h1>
+                    <div style="text-align: center; margin: 20px;">
+                        <h2>How to Play:</h2>
+                        <p>1. Each round, players are dealt an increasing number of cards (1 to 7)</p>
+                        <p>2. Players bid on how many tricks they think they'll win</p>
+                        <p>3. Making your exact bid scores 10 points plus the number of tricks</p>
+                        <p>4. You must follow suit if possible</p>
+                        <p>5. Highest card of the lead suit wins unless trumped</p>
+                        <p>To play a card, drag it to the center area!</p>
+                        <button onclick="startGame()" style="font-size: 1.2em; padding: 10px 20px; margin-top: 20px;">Start Game</button>
+                    </div>
+                </div>
+            `;
+            
+            window.startGame = () => {
+                new OhHellGame('game-container');
+            };
         });
     </script>
 </body>
