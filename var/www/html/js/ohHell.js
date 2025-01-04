@@ -776,6 +776,12 @@ class OhHellGame {
 	renderTrick() {
 		if (this.isDragging) return; // Don't update during drag operations
 		
+		// Safety check: ensure trick doesn't exceed 4 cards
+		if (this.currentTrick.length > 4) {
+			console.error('Invalid trick state:', this.currentTrick);
+			this.currentTrick = this.currentTrick.slice(0, 4);
+		}
+		
 		const trickArea = document.getElementById('trick-area');
 		const trickPositions = document.getElementById('trick-positions');
 		
@@ -1031,44 +1037,55 @@ class OhHellGame {
 		}
 	}
     
-    evaluateTrick() {
-        const leadSuit = this.currentTrick[0].card.suit;
-        let winner = 0;
-        let highestValue = this.values.indexOf(this.currentTrick[0].card.value);
-        let trumpInTrick = false;
-        
-        this.currentTrick.forEach((play, index) => {
-            const isTrump = play.card.suit === this.trumpCard.suit;
-            const cardValue = this.values.indexOf(play.card.value);
-            
-            if (isTrump && !trumpInTrick) {
-                winner = index;
-                highestValue = cardValue;
-                trumpInTrick = true;
-            } else if (isTrump && trumpInTrick) {
-                if (cardValue > highestValue) {
-                    winner = index;
-                    highestValue = cardValue;
-                }
-            } else if (!trumpInTrick && play.card.suit === leadSuit) {
-                if (cardValue > highestValue) {
-                    winner = index;
-                    highestValue = cardValue;
-                }
-            }
-        });
-        
-        this.tricks[this.currentTrick[winner].player]++;
-        this.currentPlayer = this.currentTrick[winner].player;
-        this.currentTrick = [];
-        this.renderGameState();
-        
-        if (this.playerHand.length === 0) {
-            setTimeout(() => this.endRound(), this.getDelay());
-        } else if (this.currentPlayer !== 0) {
-            setTimeout(() => this.aiPlay(), this.getDelay());
-        }
-    }
+	evaluateTrick() {
+		console.log('Evaluating trick:', this.currentTrick);
+		
+		if (this.currentTrick.length !== 4) {
+			console.error('Invalid trick length:', this.currentTrick.length);
+			return;
+		}
+		
+		const leadSuit = this.currentTrick[0].card.suit;
+		let winner = 0;
+		let highestValue = this.values.indexOf(this.currentTrick[0].card.value);
+		let trumpInTrick = false;
+		
+		this.currentTrick.forEach((play, index) => {
+			const isTrump = play.card.suit === this.trumpCard.suit;
+			const cardValue = this.values.indexOf(play.card.value);
+			
+			if (isTrump && !trumpInTrick) {
+				winner = index;
+				highestValue = cardValue;
+				trumpInTrick = true;
+			} else if (isTrump && trumpInTrick) {
+				if (cardValue > highestValue) {
+					winner = index;
+					highestValue = cardValue;
+				}
+			} else if (!trumpInTrick && play.card.suit === leadSuit) {
+				if (cardValue > highestValue) {
+					winner = index;
+					highestValue = cardValue;
+				}
+			}
+		});
+		
+		const winningPlayer = this.currentTrick[winner].player;
+		console.log('Trick winner:', winningPlayer, 'with card:', this.currentTrick[winner].card);
+		
+		this.tricks[winningPlayer]++;
+		this.currentPlayer = winningPlayer;
+		// Important: Clear the trick AFTER determining the winner
+		this.currentTrick = [];
+		this.renderGameState();
+		
+		if (this.playerHand.length === 0) {
+			setTimeout(() => this.endRound(), this.getDelay());
+		} else if (this.currentPlayer !== 0) {
+			setTimeout(() => this.aiPlay(), this.getDelay());
+		}
+	}
     
     endRound() {
         // Calculate scores
