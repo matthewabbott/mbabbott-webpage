@@ -530,32 +530,43 @@ class OhHellGame {
         this.setupCardHandling();  // Re-setup handlers after rendering
     }
     
-    createCardElement(card, index = null) {
-        const cardElement = document.createElement('div');
-        cardElement.className = 'card';
-        cardElement.style.width = '100px';
-        cardElement.style.height = '140px';
-        cardElement.style.border = '1px solid #000';
-        cardElement.style.borderRadius = '5px';
-        cardElement.style.backgroundColor = '#fff';
-        cardElement.style.position = 'relative';
-        cardElement.style.display = 'inline-block';
-        cardElement.style.margin = '0 5px';
-        cardElement.style.color = ['♥', '♦'].includes(card.suit) ? 'red' : 'black';
-        cardElement.style.transition = 'transform 0.2s';
-        
-        if (index !== null) {
-            cardElement.dataset.index = index;
-        }
-        
-        cardElement.innerHTML = `
-            <div style="position: absolute; top: 5px; left: 5px; font-size: 20px; font-weight: bold;">${card.value}${card.suit}</div>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px;">${card.suit}</div>
-            <div style="position: absolute; bottom: 5px; right: 5px; transform: rotate(180deg); font-size: 20px; font-weight: bold;">${card.value}${card.suit}</div>
-        `;
-        
-        return cardElement;
-    }
+	createCardElement(card, index = null) {
+		// Add error checking
+		if (!card || typeof card !== 'object') {
+			console.error('Invalid card object passed to createCardElement:', card);
+			return document.createElement('div'); // Return empty div instead of crashing
+		}
+
+		if (!card.suit || !card.value) {
+			console.error('Card missing required properties:', card);
+			return document.createElement('div');
+		}
+
+		const cardElement = document.createElement('div');
+		cardElement.className = 'card';
+		cardElement.style.width = '100px';
+		cardElement.style.height = '140px';
+		cardElement.style.border = '1px solid #000';
+		cardElement.style.borderRadius = '5px';
+		cardElement.style.backgroundColor = '#fff';
+		cardElement.style.position = 'relative';
+		cardElement.style.display = 'inline-block';
+		cardElement.style.margin = '0 5px';
+		cardElement.style.color = ['♥', '♦'].includes(card.suit) ? 'red' : 'black';
+		cardElement.style.transition = 'transform 0.2s';
+		
+		if (index !== null) {
+			cardElement.dataset.index = index;
+		}
+		
+		cardElement.innerHTML = `
+			<div style="position: absolute; top: 5px; left: 5px; font-size: 20px; font-weight: bold;">${card.value}${card.suit}</div>
+			<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px;">${card.suit}</div>
+			<div style="position: absolute; bottom: 5px; right: 5px; transform: rotate(180deg); font-size: 20px; font-weight: bold;">${card.value}${card.suit}</div>
+		`;
+		
+		return cardElement;
+	}
     
     renderPlayerHand() {
         const handContainer = document.getElementById('player-hand');
@@ -762,44 +773,58 @@ class OhHellGame {
 		this.renderPlayerHand();
 	}
 
-    renderTrick() {
-        if (this.isDragging) return; // Don't update during drag operations
-        
-        const trickArea = document.getElementById('trick-area');
-        const trickPositions = document.getElementById('trick-positions');
-        
-        // Clear only the trick positions
-        if (trickPositions) {
-            trickPositions.innerHTML = '';
-        } else {
-            // Create trick positions container if it doesn't exist
-            const newTrickPositions = document.createElement('div');
-            newTrickPositions.id = 'trick-positions';
-            trickArea.appendChild(newTrickPositions);
-        }
-        
-        // Position cards in diamond formation
-        const positions = [
-            { left: '50%', top: '75%', transform: 'translate(-50%, -50%)' }, // Bottom (Player)
-            { left: '25%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }, // Left
-            { left: '50%', top: '25%', transform: 'translate(-50%, -50%)' }, // Top
-            { left: '75%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }  // Right
-        ];
-        
-        // Add played cards to trick positions
-        this.currentTrick.forEach((play) => {
-            const cardElement = this.createCardElement(play.card);
-            cardElement.style.position = 'absolute';
-            Object.assign(cardElement.style, positions[play.player]);
-            trickPositions.appendChild(cardElement);
-        });
-        
-        // Ensure card slot is the last child for proper z-indexing
-        const cardSlot = document.getElementById('card-slot');
-        if (cardSlot && cardSlot.parentNode === trickArea) {
-            trickArea.appendChild(cardSlot);
-        }
-    }
+	renderTrick() {
+		if (this.isDragging) return; // Don't update during drag operations
+		
+		const trickArea = document.getElementById('trick-area');
+		const trickPositions = document.getElementById('trick-positions');
+		
+		if (!trickArea || !trickPositions) {
+			console.error('Required DOM elements not found');
+			return;
+		}
+		
+		// Clear only the trick positions
+		trickPositions.innerHTML = '';
+		
+		// Position cards in diamond formation
+		const positions = [
+			{ left: '50%', top: '75%', transform: 'translate(-50%, -50%)' }, // Bottom (Player)
+			{ left: '25%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }, // Left
+			{ left: '50%', top: '25%', transform: 'translate(-50%, -50%)' }, // Top
+			{ left: '75%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }  // Right
+		];
+		
+		// Add played cards to trick positions
+		this.currentTrick.forEach((play) => {
+			// Error checking for play object
+			if (!play || !play.card || typeof play.player === 'undefined') {
+				console.error('Invalid play object in currentTrick:', play);
+				return;
+			}
+
+			const cardElement = this.createCardElement(play.card);
+			if (!cardElement) {
+				console.error('Failed to create card element for play:', play);
+				return;
+			}
+
+			cardElement.style.position = 'absolute';
+			const position = positions[play.player];
+			if (position) {
+				Object.assign(cardElement.style, position);
+				trickPositions.appendChild(cardElement);
+			} else {
+				console.error('Invalid player position:', play.player);
+			}
+		});
+		
+		// Ensure card slot is the last child for proper z-indexing
+		const cardSlot = document.getElementById('card-slot');
+		if (cardSlot && cardSlot.parentNode === trickArea) {
+			trickArea.appendChild(cardSlot);
+		}
+	}
     
 	showBiddingInterface() {
 		const biddingInterface = document.getElementById('bidding-interface');
@@ -939,36 +964,46 @@ class OhHellGame {
         setTimeout(() => this.aiPlay(), this.getDelay());
     }    
 
-    aiPlay() {
-        const aiIndex = this.currentPlayer - 1;
-        const aiHand = this.aiHands[aiIndex];
-        
-        // Play first legal card
-        let playIndex = 0;
-        if (this.currentTrick.length > 0) {
-            const leadSuit = this.currentTrick[0].card.suit;
-            const suitCards = aiHand.filter(c => c.suit === leadSuit);
-            if (suitCards.length > 0) {
-                playIndex = aiHand.indexOf(suitCards[0]);
-            }
-        }
-        
-        const card = aiHand[playIndex];
-        this.currentTrick.push({ card, player: this.currentPlayer });
-        aiHand.splice(playIndex, 1);
-        this.renderGameState();
-        
-        if (this.currentTrick.length === 4) {
-            setTimeout(() => this.evaluateTrick(), this.getDelay());
-        } else {
-            this.currentPlayer = (this.currentPlayer + 1) % 4;
-            if (this.currentPlayer !== 0) {
-                setTimeout(() => this.aiPlay(), this.getDelay());
-            } else {
+	aiPlay() {
+		const aiIndex = this.currentPlayer - 1;
+		const aiHand = this.aiHands[aiIndex];
+		
+		if (!Array.isArray(aiHand)) {
+			console.error('Invalid AI hand:', aiHand);
+			return;
+		}
+		
+		// Play first legal card
+		let playIndex = 0;
+		if (this.currentTrick.length > 0 && this.currentTrick[0] && this.currentTrick[0].card) {
+			const leadSuit = this.currentTrick[0].card.suit;
+			const suitCards = aiHand.filter(c => c && c.suit === leadSuit);
+			if (suitCards.length > 0) {
+				playIndex = aiHand.indexOf(suitCards[0]);
+			}
+		}
+		
+		const card = aiHand[playIndex];
+		if (!card) {
+			console.error('No valid card found for AI play');
+			return;
+		}
+		
+		this.currentTrick.push({ card, player: this.currentPlayer });
+		aiHand.splice(playIndex, 1);
+		this.renderGameState();
+		
+		if (this.currentTrick.length === 4) {
+			setTimeout(() => this.evaluateTrick(), this.getDelay());
+		} else {
+			this.currentPlayer = (this.currentPlayer + 1) % 4;
+			if (this.currentPlayer !== 0) {
+				setTimeout(() => this.aiPlay(), this.getDelay());
+			} else {
 				setTimeout(() => this.showCardSlot(), this.getDelay());
 			}
-        }
-    }
+		}
+	}
     
     evaluateTrick() {
         const leadSuit = this.currentTrick[0].card.suit;
