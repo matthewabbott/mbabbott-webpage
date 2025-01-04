@@ -884,9 +884,11 @@ class OhHellGame {
         
         this.currentPlayer = (this.dealer + 1) % 4;
         
-        // Debug output
-        console.log('Player hand after dealing:', this.playerHand);
-        console.log('Current player:', this.currentPlayer);
+		// Debug output
+		console.log('Player hand after dealing:', this.playerHand);
+		console.log('AI hands after dealing:', this.aiHands);
+		console.log('Current player:', this.currentPlayer);
+		console.log('Trump card:', this.trumpCard);
         
         // Render the game state (which now includes updating the trump display)
         this.renderGameState();
@@ -968,24 +970,48 @@ class OhHellGame {
 		const aiIndex = this.currentPlayer - 1;
 		const aiHand = this.aiHands[aiIndex];
 		
+		console.log(`AI ${aiIndex + 1} playing with hand:`, aiHand);
+		console.log('Current trick:', this.currentTrick);
+		
 		if (!Array.isArray(aiHand)) {
 			console.error('Invalid AI hand:', aiHand);
 			return;
 		}
 		
+		if (aiHand.length === 0) {
+			console.error('AI hand is empty');
+			return;
+		}
+		
 		// Play first legal card
-		let playIndex = 0;
+		let playableCards = [...aiHand];  // Start with all cards being playable
+		
 		if (this.currentTrick.length > 0 && this.currentTrick[0] && this.currentTrick[0].card) {
 			const leadSuit = this.currentTrick[0].card.suit;
+			console.log('Lead suit:', leadSuit);
+			
+			// First try to follow suit
 			const suitCards = aiHand.filter(c => c && c.suit === leadSuit);
+			console.log('Cards matching lead suit:', suitCards);
+			
 			if (suitCards.length > 0) {
-				playIndex = aiHand.indexOf(suitCards[0]);
+				playableCards = suitCards;  // Must follow suit if possible
 			}
+			// If no cards of lead suit, can play any card
 		}
+		
+		// Select the first playable card
+		const playIndex = aiHand.indexOf(playableCards[0]);
+		console.log('Selected card index:', playIndex);
 		
 		const card = aiHand[playIndex];
 		if (!card) {
-			console.error('No valid card found for AI play');
+			console.error('No valid card found for AI play', {
+				aiIndex,
+				handLength: aiHand.length,
+				playableCards,
+				currentTrick: this.currentTrick
+			});
 			return;
 		}
 		
