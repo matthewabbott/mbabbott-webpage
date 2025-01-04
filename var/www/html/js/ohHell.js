@@ -23,7 +23,10 @@ class OhHellGame {
         this.lastMousePos = { x: 0, y: 0 };
         this.selectedCard = null;
         this.setupCardHandling();
-        
+		
+        this.gameSpeed = 1; // Default speed multiplier
+        this.BASE_DELAY = 1000; // Base delay in milliseconds
+		
         this.initializeGame();
     }
 
@@ -163,7 +166,23 @@ class OhHellGame {
 					pointer-events: none;
 					box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 				}
-			</style>
+                .speed-control {
+                    margin-top: 20px;
+                    padding: 15px;
+                    border-top: 1px solid #ddd;
+                }
+                
+                .speed-slider {
+                    width: 100%;
+                    margin: 10px 0;
+                }
+                
+                .speed-label {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 5px;
+                }
+            </style>
 
 			<div class="game-layout">
 				<!-- SIDEBAR: Score summary & Round history -->
@@ -182,6 +201,25 @@ class OhHellGame {
 							<tbody id="score-summary"></tbody>
 						</table>
 					</div>
+
+                    <!-- Speed Control -->
+                    <div class="speed-control">
+                        <h3>Game Speed</h3>
+                        <div class="speed-label">
+                            <span>Slower</span>
+                            <span>Faster</span>
+                        </div>
+                        <input 
+                            type="range" 
+                            id="speed-slider" 
+                            class="speed-slider"
+                            min="0.2" 
+                            max="20" 
+                            step="0.2" 
+                            value="1"
+                        >
+                        <div id="speed-value" style="text-align: center;">1x</div>
+                    </div>
 
 					<h3 style="margin-top: 20px;">Round History</h3>
 					<div class="score-table-container">
@@ -299,8 +337,23 @@ class OhHellGame {
         this.container.addEventListener('mouseup', () => this.handleMouseUp());
         document.addEventListener('mouseleave', () => this.handleMouseUp());
         
-        // Re-setup card handling since elements might have been recreated
+        // Look man, this just helps okay. 
         this.setupCardHandling();
+		
+		// Add speed slider listener
+        const speedSlider = document.getElementById('speed-slider');
+        const speedValue = document.getElementById('speed-value');
+        
+        if (speedSlider && speedValue) {
+            speedSlider.addEventListener('input', (e) => {
+                this.gameSpeed = parseFloat(e.target.value);
+                speedValue.textContent = `${this.gameSpeed}x`;
+            });
+        }
+    }
+	
+	getDelay(baseDelay = this.BASE_DELAY) {
+        return baseDelay / this.gameSpeed;
     }
 
     setupCardHandling() {
@@ -843,7 +896,7 @@ class OhHellGame {
         if (this.currentPlayer === 0) {
             this.showBiddingInterface();
         } else {
-            setTimeout(() => this.makeAiBid(), 1000);
+            setTimeout(() => this.makeAiBid(), this.getDelay());
         }
     }
     
@@ -883,7 +936,7 @@ class OhHellGame {
         this.renderGameState();
         
         this.currentPlayer = 1;
-        setTimeout(() => this.aiPlay(), 1000);
+        setTimeout(() => this.aiPlay(), this.getDelay());
     }    
 
     aiPlay() {
@@ -906,13 +959,13 @@ class OhHellGame {
         this.renderGameState();
         
         if (this.currentTrick.length === 4) {
-            setTimeout(() => this.evaluateTrick(), 1000);
+            setTimeout(() => this.evaluateTrick(), this.getDelay());
         } else {
             this.currentPlayer = (this.currentPlayer + 1) % 4;
             if (this.currentPlayer !== 0) {
-                setTimeout(() => this.aiPlay(), 1000);
+                setTimeout(() => this.aiPlay(), this.getDelay());
             } else {
-				setTimeout(() => this.showCardSlot(), 1000);
+				setTimeout(() => this.showCardSlot(), this.getDelay());
 			}
         }
     }
@@ -950,9 +1003,9 @@ class OhHellGame {
         this.renderGameState();
         
         if (this.playerHand.length === 0) {
-            setTimeout(() => this.endRound(), 1000);
+            setTimeout(() => this.endRound(), this.getDelay());
         } else if (this.currentPlayer !== 0) {
-            setTimeout(() => this.aiPlay(), 1000);
+            setTimeout(() => this.aiPlay(), this.getDelay());
         }
     }
     
@@ -983,7 +1036,7 @@ class OhHellGame {
         
         if (this.currentRound < 7) {
             this.currentRound++;
-            setTimeout(() => this.startNewRound(), 1000);
+            setTimeout(() => this.startNewRound(), this.getDelay());
         } else {
             const winner = this.scores.indexOf(Math.max(...this.scores));
             alert(`Game Over! ${this.playerNames[winner]} wins with ${this.scores[winner]} points!`);
