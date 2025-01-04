@@ -287,13 +287,15 @@ class OhHellGame {
 		// Append to body
 		document.body.appendChild(cardConfirmation);
 
-		// We'll set up the event listeners in setupCardHandling or here:
+		//Set up the event listeners
 		const confirmButton = cardConfirmation.querySelector('#confirm-card');
 		const cancelButton  = cardConfirmation.querySelector('#cancel-card');
 
 		confirmButton.addEventListener('click', () => {
 			if (this.selectedCard !== null) {
+				
 				this.playCard(this.selectedCard);
+				//this.hideCardSlot();
 				this.clearSelectedCard();
 			}
 		});
@@ -469,6 +471,17 @@ class OhHellGame {
 	hideCardSlot() {
 		const cardSlot = document.getElementById('card-slot');
 		cardSlot.style.display = 'none';
+		/*
+		cardSlot.style.display = 'flex';
+		cardSlot.innerHTML = `
+			<div style="
+				height: 140px; border: 2px dashed #0073b1; border-radius: 8px; 
+				background: rgba(0, 115, 177, 0.1);
+				display: flex; align-items: center; justify-content: center; color: #0073b1;">
+				TESTESTSATASJKSHALGJKSGAKJG
+			</div>
+		`;
+		*/
 	}
 	
     renderGameState() {
@@ -608,9 +621,6 @@ class OhHellGame {
         document.body.appendChild(floatingCard);
         this.updateFloatingCardPosition(e);
 
-        // Show card slot immediately
-        this.showCardSlot()
-
         // Prevent text selection during drag
         e.preventDefault();
     }
@@ -704,8 +714,8 @@ class OhHellGame {
 		const cardSlot = document.getElementById('card-slot');
 		const playerHand = document.getElementById('player-hand');
 		const cardConfirmation = document.getElementById('card-confirmation');
-
-		this.showCardSlot()
+		
+		this.hideCardSlot();
 
 		if (cardConfirmation) {
 			cardConfirmation.style.display = 'none';
@@ -877,7 +887,7 @@ class OhHellGame {
     
     playCard(index) {
         if (this.currentPlayer !== 0 || this.biddingPhase) return;
-        
+		
         const card = this.playerHand[index];
         this.currentTrick.push({ card, player: 0 });
         this.playerHand.splice(index, 1);
@@ -887,11 +897,8 @@ class OhHellGame {
 		
         if (cardConfirmation) {
             cardConfirmation.style.display = 'none';
-			
-			this.hideCardSlot()
         }
 		
-        
         this.renderGameState();
         
         this.currentPlayer = 1;
@@ -924,7 +931,7 @@ class OhHellGame {
             if (this.currentPlayer !== 0) {
                 setTimeout(() => this.aiPlay(), 1000);
             } else {
-				this.showCardSlot();
+				setTimeout(() => this.showCardSlot(), 1000);
 			}
         }
     }
