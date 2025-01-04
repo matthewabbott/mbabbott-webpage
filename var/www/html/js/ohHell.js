@@ -968,8 +968,13 @@ class OhHellGame {
 		
         this.renderGameState();
         
-        this.currentPlayer = 1;
-        setTimeout(() => this.aiPlay(), this.getDelay());
+		if (this.currentTrick.length === 4) {
+			// Trick is complete
+			setTimeout(() => this.evaluateTrick(), this.getDelay());
+		} else {
+			this.currentPlayer = 1; // human is 0
+			setTimeout(() => this.aiPlay(), this.getDelay());
+		}
     }    
 
 	aiPlay() {
