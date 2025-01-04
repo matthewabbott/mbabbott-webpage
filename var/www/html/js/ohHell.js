@@ -286,23 +286,6 @@ class OhHellGame {
 
 		// Append to body
 		document.body.appendChild(cardConfirmation);
-
-		//Set up the event listeners
-		const confirmButton = cardConfirmation.querySelector('#confirm-card');
-		const cancelButton  = cardConfirmation.querySelector('#cancel-card');
-
-		confirmButton.addEventListener('click', () => {
-			if (this.selectedCard !== null) {
-				
-				this.playCard(this.selectedCard);
-				//this.hideCardSlot();
-				this.clearSelectedCard();
-			}
-		});
-
-		cancelButton.addEventListener('click', () => {
-			this.clearSelectedCard();
-		});
 	}
 
     setupEventListeners() {
@@ -328,7 +311,6 @@ class OhHellGame {
         if (confirmButton) {
             confirmButton.addEventListener('click', () => {
                 if (this.selectedCard !== null) {
-					this.hideCardSlot();
                     this.playCard(this.selectedCard);
                     this.clearSelectedCard();
                 }
@@ -338,6 +320,7 @@ class OhHellGame {
         if (cancelButton) {
             cancelButton.addEventListener('click', () => {
                 this.clearSelectedCard();
+				this.showCardSlot();
             });
         }
     }
@@ -711,7 +694,6 @@ class OhHellGame {
 
 	clearSelectedCard() {
 		this.selectedCard = null;
-		const cardSlot = document.getElementById('card-slot');
 		const playerHand = document.getElementById('player-hand');
 		const cardConfirmation = document.getElementById('card-confirmation');
 		
@@ -724,7 +706,6 @@ class OhHellGame {
 		if (playerHand) {
 			playerHand.style.opacity = '1';
 		}
-
 		this.renderPlayerHand();
 	}
 
