@@ -979,55 +979,49 @@ class OhHellGame {
 		console.log(`AI ${aiIndex + 1} playing with hand:`, aiHand);
 		console.log('Current trick:', this.currentTrick);
 		
-		if (!Array.isArray(aiHand)) {
-			console.error('Invalid AI hand:', aiHand);
+		if (!Array.isArray(aiHand) || aiHand.length === 0) {
+			console.error('Invalid or empty AI hand:', aiHand);
 			return;
 		}
 		
-		if (aiHand.length === 0) {
-			console.error('AI hand is empty');
+		// Don't play if trick is already complete
+		if (this.currentTrick.length >= 4) {
+			console.error('Trying to play to a complete trick');
 			return;
 		}
 		
-		// Play first legal card
-		let playableCards = [...aiHand];  // Start with all cards being playable
+		// Select card to play
+		let playableCards = [...aiHand];
 		
-		if (this.currentTrick.length > 0 && this.currentTrick[0] && this.currentTrick[0].card) {
+		if (this.currentTrick.length > 0) {
 			const leadSuit = this.currentTrick[0].card.suit;
-			console.log('Lead suit:', leadSuit);
-			
-			// First try to follow suit
 			const suitCards = aiHand.filter(c => c && c.suit === leadSuit);
+			console.log('Lead suit:', leadSuit);
 			console.log('Cards matching lead suit:', suitCards);
 			
 			if (suitCards.length > 0) {
 				playableCards = suitCards;  // Must follow suit if possible
 			}
-			// If no cards of lead suit, can play any card
 		}
 		
-		// Select the first playable card
 		const playIndex = aiHand.indexOf(playableCards[0]);
-		console.log('Selected card index:', playIndex);
-		
 		const card = aiHand[playIndex];
+		
 		if (!card) {
-			console.error('No valid card found for AI play', {
-				aiIndex,
-				handLength: aiHand.length,
-				playableCards,
-				currentTrick: this.currentTrick
-			});
+			console.error('No valid card found for AI play');
 			return;
 		}
 		
+		// Play the card
 		this.currentTrick.push({ card, player: this.currentPlayer });
 		aiHand.splice(playIndex, 1);
 		this.renderGameState();
 		
 		if (this.currentTrick.length === 4) {
+			// Trick is complete
 			setTimeout(() => this.evaluateTrick(), this.getDelay());
 		} else {
+			// Move to next player
 			this.currentPlayer = (this.currentPlayer + 1) % 4;
 			if (this.currentPlayer !== 0) {
 				setTimeout(() => this.aiPlay(), this.getDelay());
@@ -1074,16 +1068,33 @@ class OhHellGame {
 		const winningPlayer = this.currentTrick[winner].player;
 		console.log('Trick winner:', winningPlayer, 'with card:', this.currentTrick[winner].card);
 		
+		// Update tricks won and clear trick
 		this.tricks[winningPlayer]++;
-		this.currentPlayer = winningPlayer;
-		// Important: Clear the trick AFTER determining the winner
 		this.currentTrick = [];
+		this.currentPlayer = winningPlayer;
+		
+		// Check if round is over
+		const allHandsEmpty = this.playerHand.length === 0 && 
+							 this.aiHands[0].length === 0 && 
+							 this.aiHands[1].length === 0 && 
+							 this.aiHands[2].length === 0;
+		
+		console.log('Round end check - All hands empty:', allHandsEmpty);
+		
+		// Important: Render state AFTER all updates
 		this.renderGameState();
 		
-		if (this.playerHand.length === 0) {
+		if (allHandsEmpty) {
+			console.log('Round is over, calling endRound');
 			setTimeout(() => this.endRound(), this.getDelay());
-		} else if (this.currentPlayer !== 0) {
-			setTimeout(() => this.aiPlay(), this.getDelay());
+		} else {
+			// If the winner is the player, show their card slot
+			if (winningPlayer === 0) {
+				setTimeout(() => this.showCardSlot(), this.getDelay());
+			} else {
+				// If AI won, let them lead
+				setTimeout(() => this.aiPlay(), this.getDelay());
+			}
 		}
 	}
     
