@@ -12,27 +12,30 @@ class CardDeck {
         this.suits = ['♠', '♥', '♦', '♣'];
         this.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
         
-        // Physics properties
-        this.friction = 0.95; // Slowdown factor
-        this.restitution = 0.7; // Bounciness
-        this.minSpeed = 0.1; // Minimum speed before coming to rest
+        // Adjusted physics parameters for more dynamic interactions
+        this.friction = 0.99; // Higher value = more sliding
+        this.restitution = 0.8; // Higher value = more bouncy collisions
+        this.minSpeed = 0.05; // Lower threshold for coming to rest
+        this.collisionDamping = 1.2; // Increased for more energetic collisions
+        this.maxHeldRotation = 15; // Maximum rotation while held (degrees)
+        this.rotationSpeed = 0.3; // Reduced rotation speed while held
         
         // Bind methods
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.updatePhysics = this.updatePhysics.bind(this);
+        this.clearCards = this.clearCards.bind(this);
         
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('mouseup', this.handleMouseUp);
         
-        // Start physics loop
         requestAnimationFrame(this.updatePhysics);
         
-        this.init();
+        this.createDeckAndControls();
     }
     
-    init() {
+    createDeckAndControls() {
         const deckContainer = document.createElement('div');
         deckContainer.className = 'deck-container';
         deckContainer.style.position = 'absolute';
@@ -40,9 +43,32 @@ class CardDeck {
         deckContainer.style.top = '50%';
         deckContainer.style.transform = 'translateY(-50%)';
         deckContainer.style.textAlign = 'center';
-        // Enable pointer events for the deck container
         deckContainer.style.pointerEvents = 'auto';
         
+        // Add clear button
+        const clearButton = document.createElement('button');
+        clearButton.textContent = 'Clear Cards';
+        clearButton.style.cssText = `
+            background: #aa1f23;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-family: 'Crimson Text', Georgia, serif;
+            transition: background-color 0.2s;
+        `;
+        clearButton.addEventListener('mouseover', () => {
+            clearButton.style.background = '#8a181b';
+        });
+        clearButton.addEventListener('mouseout', () => {
+            clearButton.style.background = '#aa1f23';
+        });
+        clearButton.addEventListener('click', this.clearCards);
+        deckContainer.appendChild(clearButton);
+        
+        // Add label
         const label = document.createElement('div');
         label.textContent = 'Click to draw a card!';
         label.style.marginBottom = '15px';
@@ -52,7 +78,14 @@ class CardDeck {
         label.style.fontStyle = 'italic';
         deckContainer.appendChild(label);
         
-        // Create deck with stacked effect
+        // Create deck with single pattern on top
+        const deck = this.createDeckVisual();
+        deckContainer.appendChild(deck);
+        
+        this.container.appendChild(deckContainer);
+    }
+    
+    createDeckVisual() {
         const deck = document.createElement('div');
         deck.className = 'deck';
         deck.style.cursor = 'pointer';
@@ -90,7 +123,6 @@ class CardDeck {
         topCard.style.transform = 'translateY(-2px) translateX(2px)';
         topCard.style.transition = 'transform 0.2s ease';
 
-        // Add pattern only to top card
         const pattern = document.createElement('div');
         pattern.style.position = 'absolute';
         pattern.style.top = '50%';
@@ -122,15 +154,15 @@ class CardDeck {
                 card.style.transform = `translateY(${i * -1}px) translateX(${i * 1}px)`;
             });
         });
-        
-        deckContainer.appendChild(deck);
-        this.container.appendChild(deckContainer);
+
+        return deck;
     }
-	  
-    getRandomCard() {
-        const suit = this.suits[Math.floor(Math.random() * this.suits.length)];
-        const value = this.values[Math.floor(Math.random() * this.values.length)];
-        return { suit, value, id: Date.now() };
+    
+    clearCards() {
+        this.cards.forEach(card => {
+            card.remove();
+        });
+        this.cards = [];
     }
     
     drawCard() {
@@ -140,7 +172,6 @@ class CardDeck {
         card.className = 'draggable-card';
         card.id = `card-${id}`;
         
-        // Style the card
         Object.assign(card.style, {
             position: 'absolute',
             width: '128px',
@@ -151,12 +182,8 @@ class CardDeck {
             cursor: 'move',
             userSelect: 'none',
             color: ['♥', '♦'].includes(suit) ? 'red' : 'black',
-            transition: 'none', // Remove transition for smooth physics
             border: '1px solid #ddd',
-            pointerEvents: 'auto',
-            right: '40px',
-            top: '50%',
-            transform: 'translateY(-50%) rotate(0deg)',
+            pointerEvents: 'auto'
         });
         
         card.innerHTML = `
@@ -171,17 +198,16 @@ class CardDeck {
             </div>
         `;
         
-        // Add physics properties to the card
+        // Initialize physics properties
         card.physicsProps = {
-            x: window.innerWidth - 168, // 40px from right + card width
-            y: window.innerHeight / 2 - 96, // Centered - half height
-            vx: 0, // Velocity X
-            vy: 0, // Velocity Y
-            rotation: 0,
+            x: window.innerWidth - 168,
+            y: window.innerHeight / 2 - 96,
+            vx: 0,
+            vy: 0,
+            angle: 0,
             angularVelocity: 0
         };
         
-        // Update card position
         this.updateCardPosition(card);
         
         card.addEventListener('mousedown', (e) => this.handleMouseDown(e, card));
@@ -189,14 +215,12 @@ class CardDeck {
         this.container.appendChild(card);
         this.cards.push(card);
     }
-
+    
     updateCardPosition(card) {
-        const { x, y, rotation } = card.physicsProps;
-        card.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
-        card.style.right = null;
-        card.style.top = null;
+        const { x, y, angle } = card.physicsProps;
+        card.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
     }
-
+    
     handleMouseDown(e, card) {
         e.preventDefault();
         e.stopPropagation();
@@ -215,14 +239,14 @@ class CardDeck {
             y: e.clientY
         };
         
-        // Reset card's velocity when grabbed
+        // Reset velocities when grabbed
         card.physicsProps.vx = 0;
         card.physicsProps.vy = 0;
         card.physicsProps.angularVelocity = 0;
         
         card.style.zIndex = Date.now();
     }
-
+    
     handleMouseMove(e) {
         if (!this.isDragging || !this.currentCard) return;
         
@@ -231,19 +255,27 @@ class CardDeck {
         const newX = e.clientX - this.offset.x;
         const newY = e.clientY - this.offset.y;
         
-        // Calculate velocity based on mouse movement
         const deltaX = e.clientX - this.lastMousePos.x;
         const deltaY = e.clientY - this.lastMousePos.y;
         
+        // Update position
         this.currentCard.physicsProps.x = newX;
         this.currentCard.physicsProps.y = newY;
-        this.currentCard.physicsProps.vx = deltaX;
-        this.currentCard.physicsProps.vy = deltaY;
         
-        // Update rotation based on horizontal movement
-        const rotation = Math.max(Math.min(deltaX * 0.5, 15), -15);
-        this.currentCard.physicsProps.rotation = rotation;
-        this.currentCard.physicsProps.angularVelocity = deltaX * 0.5;
+        // Limited rotation while held
+        const currentAngle = this.currentCard.physicsProps.angle;
+        const rotationDelta = deltaX * this.rotationSpeed;
+        const newAngle = currentAngle + rotationDelta;
+        
+        // Clamp rotation while held
+        this.currentCard.physicsProps.angle = Math.max(
+            -this.maxHeldRotation,
+            Math.min(this.maxHeldRotation, newAngle)
+        );
+        
+        // Store movement for release velocity
+        this.currentCard.physicsProps.lastDeltaX = deltaX;
+        this.currentCard.physicsProps.lastDeltaY = deltaY;
         
         this.updateCardPosition(this.currentCard);
         
@@ -256,91 +288,76 @@ class CardDeck {
     handleMouseUp() {
         if (!this.currentCard) return;
         
-        // Keep the current velocity for physics simulation
-        const deltaX = this.lastMousePos.x - this.offset.x;
-        const deltaY = this.lastMousePos.y - this.offset.y;
+        const props = this.currentCard.physicsProps;
         
-        this.currentCard.physicsProps.vx = deltaX * 0.1;
-        this.currentCard.physicsProps.vy = deltaY * 0.1;
+        // Apply release velocity based on recent movement
+        props.vx = props.lastDeltaX * 0.8; // Increased multiplier for more momentum
+        props.vy = props.lastDeltaY * 0.8;
+        
+        // Apply spin based on horizontal movement
+        props.angularVelocity = props.lastDeltaX * 0.5;
         
         this.isDragging = false;
         this.currentCard = null;
     }
 
-    checkCollision(card1, card2) {
-        const rect1 = {
-            x: card1.physicsProps.x,
-            y: card1.physicsProps.y,
-            width: 128,
-            height: 192
-        };
-        
-        const rect2 = {
-            x: card2.physicsProps.x,
-            y: card2.physicsProps.y,
-            width: 128,
-            height: 192
-        };
-        
-        return !(rect1.x + rect1.width < rect2.x ||
-                rect1.x > rect2.x + rect2.width ||
-                rect1.y + rect1.height < rect2.y ||
-                rect1.y > rect2.y + rect2.height);
-    }
-
     resolveCollision(card1, card2) {
-        // Calculate center points
-        const center1 = {
-            x: card1.physicsProps.x + 64,
-            y: card1.physicsProps.y + 96
-        };
-        const center2 = {
-            x: card2.physicsProps.x + 64,
-            y: card2.physicsProps.y + 96
-        };
+        // Skip collision resolution if either card is being held
+        if (card1 === this.currentCard || card2 === this.currentCard) return;
         
-        // Calculate collision normal
-        const dx = center2.x - center1.x;
-        const dy = center2.y - center1.y;
+        const dx = card2.physicsProps.x - card1.physicsProps.x;
+        const dy = card2.physicsProps.y - card1.physicsProps.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance === 0) return; // Prevent division by zero
+        if (distance === 0) return;
         
+        // Normalized collision normal
         const nx = dx / distance;
         const ny = dy / distance;
         
-        // Calculate relative velocity
+        // Relative velocity
         const dvx = card2.physicsProps.vx - card1.physicsProps.vx;
         const dvy = card2.physicsProps.vy - card1.physicsProps.vy;
         
-        // Calculate impulse
-        const impulse = (dvx * nx + dvy * ny) * (1 + this.restitution) / 2;
+        // Relative velocity along normal
+        const normalVelocity = dvx * nx + dvy * ny;
         
-        // Apply impulse
-        card1.physicsProps.vx -= impulse * nx;
-        card1.physicsProps.vy -= impulse * ny;
-        card2.physicsProps.vx += impulse * nx;
-        card2.physicsProps.vy += impulse * ny;
+        // Only resolve if objects are moving toward each other
+        if (normalVelocity > 0) return;
         
-        // Transfer some angular velocity
-        const avgAngularVelocity = (card1.physicsProps.angularVelocity + card2.physicsProps.angularVelocity) / 2;
-        card1.physicsProps.angularVelocity = avgAngularVelocity * this.restitution;
-        card2.physicsProps.angularVelocity = -avgAngularVelocity * this.restitution;
+        // Collision impulse with increased energy
+        const impulse = -(1 + this.restitution) * normalVelocity * this.collisionDamping;
+        
+        // Apply stronger impulse
+        card1.physicsProps.vx -= impulse * nx * 1.2;
+        card1.physicsProps.vy -= impulse * ny * 1.2;
+        card2.physicsProps.vx += impulse * nx * 1.2;
+        card2.physicsProps.vy += impulse * ny * 1.2;
+        
+        // Transfer angular momentum based on collision point
+        const relativeAngle = Math.atan2(dy, dx);
+        const rotationTransfer = (
+            card1.physicsProps.angularVelocity + 
+            card2.physicsProps.angularVelocity + 
+            (card1.physicsProps.vx + card2.physicsProps.vx) * Math.sin(relativeAngle) * 0.5
+        ) * 0.7;
+        
+        card1.physicsProps.angularVelocity = rotationTransfer;
+        card2.physicsProps.angularVelocity = -rotationTransfer;
     }
 
     updatePhysics() {
-        // Update each card's position based on velocity
         for (const card of this.cards) {
-            if (this.currentCard === card) continue; // Skip card being dragged
+            if (card === this.currentCard) continue;
             
             const props = card.physicsProps;
             
             // Apply velocity
             props.x += props.vx;
             props.y += props.vy;
-            props.rotation += props.angularVelocity;
+            props.angle += props.angularVelocity;
             
-            // Apply friction
+            // Reduced friction for more sliding
             props.vx *= this.friction;
             props.vy *= this.friction;
             props.angularVelocity *= this.friction;
@@ -350,14 +367,16 @@ class CardDeck {
             if (Math.abs(props.vy) < this.minSpeed) props.vy = 0;
             if (Math.abs(props.angularVelocity) < this.minSpeed) props.angularVelocity = 0;
             
-            // Bounce off window edges
+            // Bouncy edge collisions
             const windowPadding = 20;
             if (props.x < windowPadding) {
                 props.x = windowPadding;
                 props.vx = Math.abs(props.vx) * this.restitution;
+                props.angularVelocity *= -0.8; // Reverse spin on wall hit
             } else if (props.x > window.innerWidth - 128 - windowPadding) {
                 props.x = window.innerWidth - 128 - windowPadding;
                 props.vx = -Math.abs(props.vx) * this.restitution;
+                props.angularVelocity *= -0.8;
             }
             
             if (props.y < windowPadding) {
@@ -371,7 +390,7 @@ class CardDeck {
             this.updateCardPosition(card);
         }
         
-        // Check for collisions between cards
+        // Check for collisions
         for (let i = 0; i < this.cards.length; i++) {
             for (let j = i + 1; j < this.cards.length; j++) {
                 const card1 = this.cards[i];
@@ -385,12 +404,38 @@ class CardDeck {
         
         requestAnimationFrame(this.updatePhysics);
     }
-
+    
+    checkCollision(card1, card2) {
+        const margin = 20; // Reduced collision box for more natural-looking interactions
+        const rect1 = {
+            x: card1.physicsProps.x + margin,
+            y: card1.physicsProps.y + margin,
+            width: 128 - margin * 2,
+            height: 192 - margin * 2
+        };
+        
+        const rect2 = {
+            x: card2.physicsProps.x + margin,
+            y: card2.physicsProps.y + margin,
+            width: 128 - margin * 2,
+            height: 192 - margin * 2
+        };
+        
+        return !(rect1.x + rect1.width < rect2.x ||
+                rect1.x > rect2.x + rect2.width ||
+                rect1.y + rect1.height < rect2.y ||
+                rect1.y > rect2.y + rect2.height);
+    }
+    
+    getRandomCard() {
+        const suit = this.suits[Math.floor(Math.random() * this.suits.length)];
+        const value = this.values[Math.floor(Math.random() * this.values.length)];
+        return { suit, value, id: Date.now() };
+    }
+    
     destroy() {
         document.removeEventListener('mousemove', this.handleMouseMove);
         document.removeEventListener('mouseup', this.handleMouseUp);
-        this.cards.forEach(card => {
-            card.removeEventListener('mousedown', this.handleMouseDown);
-        });
+        this.clearCards();
     }
 }
