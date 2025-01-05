@@ -5,55 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matthew B. Abbott</title>
     <style>
-		 body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background-color: #f8f3e9;
+            color: #2c1810;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             flex-direction: column;
+            line-height: 1.6;
         }
-        .container {
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: minmax(300px, 2fr) minmax(300px, 1fr);
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-section {
+            background: #fff;
+            padding: 2rem;
+            border: 1px solid #d4c5b9;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-section {
             text-align: center;
-            max-width: 600px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding-top: 2rem;
         }
+
         h1 {
-            font-size: 2.5rem;
-            color: #222;
-            margin-bottom: 10px;
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            font-size: 2.8rem;
+            color: #2c1810;
+            margin: 0;
+            letter-spacing: 0.5px;
         }
-        p {
-            font-size: 1rem;
-            margin-bottom: 20px;
-        }
-        .button {
-            display: inline-block;
+
+        .subtitle {
+            font-style: italic;
+            color: #6b4d3c;
+            margin-top: 0.5rem;
             font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .section {
+            background: #fdfbf7;
+            padding: 1.5rem;
+            border: 1px solid #d4c5b9;
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            color: #2c1810;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .link-card {
+            background: #fff;
+            padding: 0.8rem;
+            border: 1px solid #d4c5b9;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-card a {
+            color: #6b4d3c;
             text-decoration: none;
-            color: white;
-            background-color: #0073b1;
-            padding: 10px 20px;
-            border-radius: 5px;
-            margin: 10px;
-            transition: background-color 0.3s;
+            font-size: 1.1rem;
+            display: block;
+            transition: color 0.2s;
         }
-        .button:hover {
-            background-color: #005582;
+
+        .link-card a:hover {
+            color: #2c1810;
         }
+
         footer {
-            margin-top: 20px;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            color: #6b4d3c;
             font-size: 0.9rem;
-            color: #777;
         }
+
         #card-container {
             position: fixed;
             top: 0;
@@ -63,30 +127,72 @@
             pointer-events: none;
             z-index: 0;
         }
-        
+
         #card-container * {
             pointer-events: auto;
         }
-        
-        .container {
-            position: relative;
-            z-index: 1;
+
+        @media (max-width: 800px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .content-sections {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="card-container"></div>
-    <div class="container">
-        <h1>Matthew B. Abbott</h1>
-        <p>Welcome to my personal homepage! Below, you can find my resume and LinkedIn profile.</p>
-        <a class="button" href="resume.pdf" target="_blank">View My Resume</a>
-        <a class="button" href="https://www.linkedin.com/in/matthew-abbott-88390065/" target="_blank">Visit My LinkedIn</a>
-		<a class="button" href="/oh-hell.html">Play 'Oh Hell!'</a>
+    <div class="main-container">
+        <div class="info-section">
+            <h1>Matthew B. Abbott</h1>
+            <div class="subtitle">I appreciate your holding me in your thoughts</div>
+            
+            <div class="content-sections">
+                <div class="section">
+                    <h2 class="section-title">Projects and Toys</h2>
+                    <div class="links">
+                        <div class="link-card">
+                            <a href="/oh-hell.html">'Oh Hell!' Card Game</a>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Contact & Links</h2>
+                    <div class="links">
+                        <div class="link-card">
+                            <a href="resume.pdf" target="_blank">View My Resume</a>
+                        </div>
+                        <div class="link-card">
+                            <a href="https://www.linkedin.com/in/matthew-abbott-88390065/" target="_blank">LinkedIn Profile</a>
+                        </div>
+                        <div class="link-card">
+                            <a href="https://github.com/matthewabbott/" target="_blank">GitHub Projects</a>
+                        </div>
+                        <div class="link-card">
+                            <a href="mailto:ttobbatam@gmail.com">Email Me</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <footer>
         &copy; 2025 Matthew B. Abbott
     </footer>
-    
+
     <script src="/js/cardDeck.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

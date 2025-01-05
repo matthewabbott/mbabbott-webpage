@@ -11,7 +11,7 @@ class OhHellGame {
         this.scores = [0, 0, 0, 0];
         this.roundHistory = [];
         this.currentPlayer = 0;
-        this.dealer = 3;
+        this.dealer = Math.floor(Math.random() * 4);
         this.biddingPhase = true;
         this.suits = ['♠', '♥', '♦', '♣'];
         this.values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -527,7 +527,7 @@ class OhHellGame {
         this.updatePlayerInfo();
         this.updateScoreDisplay();
         this.updateTrumpDisplay();
-        this.setupCardHandling();  // Re-setup handlers after rendering
+        this.setupCardHandling();  // Re-setup handlers after rendering because.... you know
     }
     
 	createCardElement(card, index = null) {
@@ -853,7 +853,6 @@ class OhHellGame {
 			cardsInHand.textContent = this.currentRound;
 		}
 
-		// Make sure trump suit reminder is updated
 		this.updateTrumpDisplay();
 	}
 
@@ -872,7 +871,7 @@ class OhHellGame {
         console.log('Dealing', handSize, 'cards per player');
         
         // Deal to each player starting with the player after the dealer
-        let currentPlayer = (this.dealer + 1) % 4;
+        let currentPlayer = (this.dealer + 1) % 4; //...this is load bearing and I forgot why
         for (let i = 0; i < handSize; i++) {
             for (let j = 0; j < 4; j++) {
                 const playerIndex = (currentPlayer + j) % 4;
@@ -885,7 +884,7 @@ class OhHellGame {
             }
         }
         
-        // Set trump card (no need to show deck anymore)
+        // Set trump card
         this.trumpCard = deck.pop();
         
         this.currentPlayer = (this.dealer + 1) % 4;
@@ -1126,7 +1125,7 @@ class OhHellGame {
         this.updateScoreDisplay();
         
         // Move dealer button
-        this.dealer = (this.dealer + 1) % 4;
+        this.rotateDealer();
         
         if (this.currentRound < 7) {
             this.currentRound++;
@@ -1135,6 +1134,11 @@ class OhHellGame {
             const winner = this.scores.indexOf(Math.max(...this.scores));
             alert(`Game Over! ${this.playerNames[winner]} wins with ${this.scores[winner]} points!`);
         }
+    }
+	
+	rotateDealer() {
+        this.dealer = (this.dealer + 1) % 4;
+        console.log('Dealer moved to:', this.playerNames[this.dealer]);
     }
     
     isCardPlayable(card) {
