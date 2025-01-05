@@ -12,13 +12,20 @@ class CardDeck {
         this.suits = ['♠', '♥', '♦', '♣'];
         this.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
         
-        // Adjusted physics parameters for more dynamic interactions
-        this.friction = 0.99; // Higher value = more sliding
-        this.restitution = 0.8; // Higher value = more bouncy collisions
-        this.minSpeed = 0.05; // Lower threshold for coming to rest
-        this.collisionDamping = 1.2; // Increased for more energetic collisions
-        this.maxHeldRotation = 15; // Maximum rotation while held (degrees)
-        this.rotationSpeed = 0.3; // Reduced rotation speed while held
+        // Base physics parameters
+        this.baseFriction = 0.99;
+        this.currentFriction = this.baseFriction;
+        this.restitution = 0.8;
+        this.minSpeed = 0.05;
+        this.collisionDamping = 1.2;
+        this.maxHeldRotation = 15;
+        this.rotationSpeed = 0.3;
+        
+        // Dynamic friction parameters
+        this.maxSystemEnergy = 1000; // Threshold for when friction starts increasing
+        this.maxFriction = 0.8; // Maximum friction when system is too energetic
+        this.frictionRecoveryRate = 0.001; // How quickly friction returns to normal
+        this.energyScale = 0.1; // Scale factor for energy calculation
         
         // Bind methods
         this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -346,7 +353,49 @@ class CardDeck {
         card2.physicsProps.angularVelocity = -rotationTransfer;
     }
 
+    calculateSystemEnergy() {
+        let totalEnergy = 0;
+        
+        for (const card of this.cards) {
+            if (card === this.currentCard) continue;
+            
+            const props = card.physicsProps;
+            // Calculate kinetic energy (speed squared)
+            const speed = Math.sqrt(props.vx * props.vx + props.vy * props.vy);
+            const rotationEnergy = Math.abs(props.angularVelocity);
+            totalEnergy += (speed * speed + rotationEnergy) * this.energyScale;
+        }
+        
+        return totalEnergy;
+    }
+
+    updateDynamicFriction() {
+        const systemEnergy = this.calculateSystemEnergy();
+        
+        if (systemEnergy > this.maxSystemEnergy) {
+            // Increase friction based on how much energy exceeds the threshold
+            const energyExcess = systemEnergy - this.maxSystemEnergy;
+            const frictionIncrease = Math.min(
+                (energyExcess / this.maxSystemEnergy) * 0.2, // Scale factor for friction increase
+                this.maxFriction - this.baseFriction
+            );
+            this.currentFriction = Math.min(
+                this.baseFriction + frictionIncrease,
+                this.maxFriction
+            );
+        } else {
+            // Gradually return to base friction
+            this.currentFriction = Math.min(
+                this.currentFriction + this.frictionRecoveryRate,
+                this.baseFriction
+            );
+        }
+    }
+
     updatePhysics() {
+        // Update dynamic friction based on system energy
+        this.updateDynamicFriction();
+        
         for (const card of this.cards) {
             if (card === this.currentCard) continue;
             
@@ -357,10 +406,10 @@ class CardDeck {
             props.y += props.vy;
             props.angle += props.angularVelocity;
             
-            // Reduced friction for more sliding
-            props.vx *= this.friction;
-            props.vy *= this.friction;
-            props.angularVelocity *= this.friction;
+            // Apply dynamic friction
+            props.vx *= this.currentFriction;
+            props.vy *= this.currentFriction;
+            props.angularVelocity *= this.currentFriction;
             
             // Stop if moving very slowly
             if (Math.abs(props.vx) < this.minSpeed) props.vx = 0;
@@ -372,7 +421,7 @@ class CardDeck {
             if (props.x < windowPadding) {
                 props.x = windowPadding;
                 props.vx = Math.abs(props.vx) * this.restitution;
-                props.angularVelocity *= -0.8; // Reverse spin on wall hit
+                props.angularVelocity *= -0.8;
             } else if (props.x > window.innerWidth - 128 - windowPadding) {
                 props.x = window.innerWidth - 128 - windowPadding;
                 props.vx = -Math.abs(props.vx) * this.restitution;
@@ -390,7 +439,7 @@ class CardDeck {
             this.updateCardPosition(card);
         }
         
-        // Check for collisions
+        // Check for collisions with dynamic friction
         for (let i = 0; i < this.cards.length; i++) {
             for (let j = i + 1; j < this.cards.length; j++) {
                 const card1 = this.cards[i];
