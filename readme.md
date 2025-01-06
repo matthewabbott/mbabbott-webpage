@@ -1,6 +1,13 @@
 # Personal Website
 
-A website with stuff I made and info about me. Check it out at [mbabbott.com](mbabbott.com)
+A website with stuff I made and info about me. Check it out at [https://mbabbott.com](https://mbabbott.com)
+
+## Links
+
+- View [my resume](https://mbabbott.com/resume.pdf)
+- View [my Github](https://github.com/matthewabbott) (You are here)
+- View [my LinkedIn](https://www.linkedin.com/in/matthew-abbott-88390065/)
+- [Email Me](mailto:ttobbatam+website@gmail.com)
 
 ## Games & Interactive Elements
 
