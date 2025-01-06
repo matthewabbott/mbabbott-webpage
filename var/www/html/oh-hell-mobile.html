@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=3.0">
+    <title>Oh Hell Card Game - Matthew Abbott</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* ... your existing styles ... */
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <a href="/" class="nav-link">← Back to Homepage</a>
+        <div class="game-container">
+            <h1>Oh Hell Card Game</h1>
+            <div class="links">
+                <a href="https://en.wikipedia.org/wiki/Oh_hell" target="_blank">Learn More on Wikipedia</a>
+                <a href="https://github.com/matthewabbott/mbabbott-webpage" target="_blank">View Source on GitHub</a>
+            </div>
+            <div class="pre-game">
+                <h2>How to Play:</h2>
+                <p>1. Each round, players are dealt an increasing number of cards (1 to 7)</p>
+                <p>2. Players bid on how many tricks they think they'll win</p>
+                <p>3. Making your exact bid scores 10 points plus the number of tricks</p>
+                <p>4. You must follow suit if possible</p>
+                <p>5. Highest card of the lead suit wins unless trumped</p>
+                <p>To play a card on mobile, drag it to the center area!</p>
+                <button onclick="startGame()">Start Game</button>
+            </div>
+            <div id="game-container"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Matthew B. Abbott
+    </footer>
+    
+	<script type="module">
+        import { OhHellGameCore } from './js/ohHell/ohHellGameCore.js';
+        import { OhHellUI } from './js/ohHell/ohHellUI.js';
+        import { CardManager } from './js/ohHell/cardManager.js';
+        import { AIPlayer } from './js/ohHell/aiPlayer.js';
+        import { GameCoordinator } from './js/ohHell/gameCoordinator.js';
+        
+        window.startGame = () => {
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer) {
+                gameContainer.innerHTML = '<div id="game-container"></div>';
+                
+                const gameCore = new OhHellGameCore();
+                const cardManager = new CardManager();
+                const ui = new OhHellUI(document.getElementById('game-container'), gameCore, cardManager);
+                const ai = new AIPlayer(gameCore);
+                
+                const coordinator = new GameCoordinator(gameCore, ui, cardManager, ai);
+                coordinator.startNewRound();
+            }
+        };
+    </script>
+</body>
+</html>
