@@ -22,37 +22,42 @@ class OhHellGame {
         this.dragOffset = { x: 0, y: 0 };
         this.lastMousePos = { x: 0, y: 0 };
         this.selectedCard = null;
-        this.setupCardHandling();
 		
         this.gameSpeed = 1; // Default speed multiplier
         this.BASE_DELAY = 1000; // Base delay in milliseconds
 		
+		const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.innerHTML = '<div id="game-container"></div>';
+        }
+		
+        this.setupCardHandling();
         this.initializeGame();
     }
 
 	initializeGame() {
 		this.container.innerHTML = `
 			<style>
-				.game-layout {
-					display: flex;
-					min-height: 800px;
-					width: 100%;
-				}
-				.sidebar {
-					width: 300px;
-					min-width: 250px;
-					background-color: #f9f9f9;
-					border-right: 1px solid #ddd;
-					padding: 20px;
-					box-sizing: border-box;
-					overflow-y: auto;
-				}
-				.main-area {
-					flex: 1;
-					position: relative;
-					padding: 20px;
-					box-sizing: border-box;
-				}
+                .game-layout {
+                    display: flex;
+                    min-height: 800px;
+                    width: 100%;
+                }
+                .sidebar {
+                    width: 300px;
+                    min-width: 250px;
+                    background-color: #f8f3e9;
+                    border-right: 1px solid #d4c5b9;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    overflow-y: auto;
+                }
+                .main-area {
+                    flex: 1;
+                    position: relative;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
 
 				.top-ai {
 					position: absolute;
@@ -100,24 +105,24 @@ class OhHellGame {
 				.hidden-card.overlapped {
 					margin: -80px 0 0 0;
 				}
-				#trick-area {
-					width: 400px;
-					height: 300px;
-					border: 2px solid #ddd;
-					border-radius: 8px;
-					margin: 0 auto;
-					position: relative;
-					z-index: 2;
-					background: rgba(0, 255, 0, 0.1);
-				}
-				#card-slot {
-					display: none;
-					position: absolute;
-					left: 50%;
-					bottom: 10px;
-					transform: translateX(-50%);
-					width: 100px;
-				}
+                #trick-area {
+                    width: 400px;
+                    height: 300px;
+                    border: 1px solid #d4c5b9;
+                    border-radius: 12px;
+                    margin: 0 auto;
+                    position: relative;
+                    z-index: 2;
+                    background-color: rgba(248, 243, 233, 0.5);
+                }
+                #card-slot {
+                    display: none;
+                    position: absolute;
+                    left: 50%;
+                    bottom: 10px;
+                    transform: translateX(-50%);
+                    width: 100px;
+                }
 
 				.player-area {
 					position: absolute;
@@ -143,18 +148,19 @@ class OhHellGame {
 					border: 1px solid #ddd;
 				}
 
-				button {
-					background-color: #0073b1;
-					color: white;
-					border: none;
-					padding: 8px 16px;
-					border-radius: 4px;
-					cursor: pointer;
-					font-size: 14px;
-				}
-				button:hover {
-					background-color: #005582;
-				}
+                button {
+                    background-color: #6b4d3c;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-family: 'Crimson Text', Georgia, serif;
+                }
+                button:hover {
+                    background-color: #2c1810;
+                }
 				input[type="number"] {
 					padding: 8px;
 					border: 1px solid #ddd;
@@ -169,7 +175,7 @@ class OhHellGame {
                 .speed-control {
                     margin-top: 20px;
                     padding: 15px;
-                    border-top: 1px solid #ddd;
+                    border-top: 1px solid #d4c5b9;
                 }
                 
                 .speed-slider {
@@ -292,18 +298,10 @@ class OhHellGame {
 			</div>
 		`;
 
-		// Create global UI elements that float on top (confirmation popup, etc.)
-		this.setupGlobalUI();
-		
-		
-		// Create the bidding interface in <body>
-		this.setupBiddingInterface();
-
-		// Attach event listeners for bidding, dragging, etc.
-		this.setupEventListeners();
-		
-		// Start the first round of the game
-		this.startNewRound();
+        this.setupGlobalUI();
+        this.setupBiddingInterface();
+        this.setupEventListeners();
+        this.startNewRound();
 	}
 
 	setupGlobalUI() {
@@ -378,39 +376,32 @@ class OhHellGame {
         }
     }
 
-	setupBiddingInterface() {
-		// Create the bidding container
-		const biddingEl = document.createElement('div');
-		biddingEl.id = 'bidding-interface';
-		biddingEl.style.position = 'absolute';
-		biddingEl.style.zIndex = '999999'; // Very high
-		biddingEl.style.display = 'none';
-		biddingEl.style.background = 'rgba(255, 255, 255, 0.95)';
-		biddingEl.style.borderRadius = '8px';
-		biddingEl.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-		biddingEl.style.padding = '20px';
-		biddingEl.style.left = '50%';  // Default positioning
-		biddingEl.style.top = '30%';
-		biddingEl.style.transform = 'translate(-50%, -50%)';
+    setupBiddingInterface() {
+        const biddingEl = document.createElement('div');
+        biddingEl.id = 'bidding-interface';
+        biddingEl.style.position = 'absolute';
+        biddingEl.style.zIndex = '999999';
+        biddingEl.style.display = 'none';
+        biddingEl.style.background = '#fff';
+        biddingEl.style.borderRadius = '12px';
+        biddingEl.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+        biddingEl.style.padding = '20px';
+        biddingEl.style.border = '1px solid #d4c5b9';
+        biddingEl.style.left = '50%';
+        biddingEl.style.top = '30%';
+        biddingEl.style.transform = 'translate(-50%, -50%)';
+        biddingEl.style.fontFamily = "'Crimson Text', Georgia, serif";
 
-		// Inner HTML of the bidding interface
-		biddingEl.innerHTML = `
-			<h3>Place Your Bid</h3>
-			<p>Cards in hand: <span id="cards-in-hand">0</span></p>
-			<p>Trump suit: <span id="trump-reminder"></span></p>
-			<input type="number" id="bid-input" min="0" max="13" value="0">
-			<button id="submit-bid">Submit Bid</button>
-		`;
+        biddingEl.innerHTML = `
+            <h3 style="color: #2c1810; margin-top: 0;">Place Your Bid</h3>
+            <p>Cards in hand: <span id="cards-in-hand">0</span></p>
+            <p>Trump suit: <span id="trump-reminder"></span></p>
+            <input type="number" id="bid-input" min="0" max="13" value="0" style="border: 1px solid #d4c5b9; border-radius: 8px;">
+            <button id="submit-bid">Submit Bid</button>
+        `;
 
-		// Append to body (top-level, not inside .center-area)
-		document.body.appendChild(biddingEl);
-
-		// Set up the "Submit Bid" listener
-		const submitButton = document.getElementById('submit-bid');
-		submitButton.addEventListener('click', () => {
-			this.submitBid();
-		});
-	}	
+        document.body.appendChild(biddingEl);
+    }
 	
     updateScoreDisplay() {
         const summaryTable = document.getElementById('score-summary');
@@ -489,20 +480,27 @@ class OhHellGame {
 		}
     }
 
-	showCardSlot() {
-	  const cardSlot = document.getElementById('card-slot');
-	  if (cardSlot) {
-		cardSlot.style.display = 'flex';
-		cardSlot.innerHTML = `
-			<div style="
-				height: 140px; border: 2px dashed #0073b1; border-radius: 8px; 
-				background: rgba(0, 115, 177, 0.1);
-				display: flex; align-items: center; justify-content: center; color: #0073b1;">
-				Drop card here
-			</div>
-		`;
-	  }
-	}
+    showCardSlot() {
+        const cardSlot = document.getElementById('card-slot');
+        if (cardSlot) {
+            cardSlot.style.display = 'flex';
+            cardSlot.innerHTML = `
+                <div style="position: relative;">
+                    <div style="
+                        height: 140px;
+                        border: 2px dashed #6b4d3c;
+                        border-radius: 8px; 
+                        background: rgba(107, 77, 60, 0.1);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #6b4d3c;">
+                        Drop card here
+                    </div>
+                </div>
+            `;
+        }
+    }
 	
 	hideCardSlot() {
 		const cardSlot = document.getElementById('card-slot');

@@ -4,71 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oh Hell Card Game - Matthew Abbott</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: 'Crimson Text', Georgia, serif;
+            background-color: #f8f3e9;
+            color: #2c1810;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
         }
-        
-        .game-container {
+
+        .main-container {
             max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            margin: 2rem auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
         }
-        
+
+        .game-container {
+            background: #fff;
+            padding: 2rem;
+            border: 1px solid #d4c5b9;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            font-size: 2.8rem;
+            color: #2c1810;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
         .nav-link {
             display: inline-block;
             text-decoration: none;
-            color: #0073b1;
+            color: #6b4d3c;
             margin-bottom: 20px;
+            font-style: italic;
+            transition: color 0.2s;
         }
-        
+
         .nav-link:hover {
-            text-decoration: underline;
+            color: #2c1810;
         }
-        
+
         #trick-area {
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid #d4c5b9;
+            border-radius: 12px;
+            background-color: rgba(248, 243, 233, 0.5);
+            margin: 20px auto;
+            width: 400px;
+            height: 300px;
+            position: relative;
         }
-        
+
         .card {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         .card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         #floating-card {
             pointer-events: none;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
-        
+
         .score-table-container {
             max-height: 300px;
             overflow-y: auto;
             margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #d4c5b9;
+            border-radius: 12px;
         }
-        
+
         .score-table th {
             position: sticky;
             top: 0;
-            background-color: #f8f9fa;
+            background-color: #fff;
             z-index: 1;
+            font-family: 'Playfair Display', serif;
+            color: #2c1810;
         }
-        
+
         #player-hand {
             display: flex;
             justify-content: center;
@@ -76,72 +105,182 @@
             padding: 20px;
             min-height: 160px;
         }
-        
-        #trick-area {
-            margin: 20px auto;
-            width: 400px;
-            height: 300px;
-            position: relative;
-        }
-        
+
         .player-info {
             text-align: center;
             margin-bottom: 10px;
             font-weight: bold;
+            color: #2c1810;
         }
-        
+
         .current-player {
-            color: #0073b1;
+            color: #6b4d3c;
             text-decoration: underline;
         }
-        
+
         button {
-            background-color: #0073b1;
-            color: white;
+            background-color: #6b4d3c;
+            color: #fff;
             border: none;
             padding: 8px 16px;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 1rem;
+            font-family: 'Crimson Text', Georgia, serif;
+            transition: background-color 0.2s;
         }
-        
+
         button:hover {
-            background-color: #005582;
+            background-color: #2c1810;
         }
-        
+
         input[type="number"] {
             padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #d4c5b9;
+            border-radius: 8px;
             margin-right: 10px;
+            font-family: 'Crimson Text', Georgia, serif;
+        }
+
+        .links {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .links a {
+            color: #6b4d3c;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.2s;
+        }
+
+        .links a:hover {
+            color: #2c1810;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            color: #6b4d3c;
+            font-size: 0.9rem;
+        }
+
+        .start-button {
+            font-size: 1.5em;
+            padding: 15px 30px;
+            background-color: #6b4d3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .start-button:hover {
+            background-color: #2c1810;
+        }
+
+        .rules-widget {
+            margin: 20px 0;
+            padding: 15px;
+            border-top: 1px solid #d4c5b9;
+            border-bottom: 1px solid #d4c5b9;
+        }
+
+        .toggle-rules {
+            width: 100%;
+            text-align: left;
+            padding: 8px;
+            margin-top: 10px;
+            background: none;
+            border: 1px solid #d4c5b9;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #6b4d3c;
+            transition: all 0.2s;
+        }
+
+        .toggle-rules:hover {
+            background-color: #f8f3e9;
+            color: #2c1810;
+        }
+
+        .rules-content {
+            padding: 15px;
+            margin-top: 10px;
+            background-color: #f8f3e9;
+            border-radius: 4px;
+        }
+
+        .rules-content p {
+            margin: 10px 0;
+            color: #2c1810;
+        }
+
+        @media (max-width: 800px) {
+            .main-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            #trick-area {
+                width: 100%;
+                max-width: 400px;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="/" class="nav-link">← Back to Homepage</a>
-    <div id="game-container"></div>
+    <div class="main-container">
+        <a href="/" class="nav-link">← Back to Homepage</a>
+        <div class="game-container">
+            <h1>Oh Hell Card Game</h1>
+            <div class="links">
+                <a href="https://en.wikipedia.org/wiki/Oh_hell" target="_blank">Learn More on Wikipedia</a>
+                <a href="https://github.com/matthewabbott/mbabbott-webpage" target="_blank">View Source on GitHub</a>
+            </div>
+            <div style="text-align: center; margin: 20px;">
+                <h2>How to Play:</h2>
+                <p>1. Each round, players are dealt an increasing number of cards (1 to 7)</p>
+                <p>2. Players bid on how many tricks they think they'll win</p>
+                <p>3. Making your exact bid scores 10 points plus the number of tricks</p>
+                <p>4. You must follow suit if possible</p>
+                <p>5. Highest card of the lead suit wins unless trumped</p>
+                <p>To play a card, drag it to the center area!</p>
+                <button onclick="startGame()">Start Game</button>
+            </div>
+            <div id="game-container"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Matthew B. Abbott
+    </footer>
     
     <script src="/js/ohHell.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('game-container');
-            container.innerHTML = `
-                <div class="game-container">
-                    <h1>Oh Hell Card Game</h1>
-                    <div style="text-align: center; margin: 20px;">
-                        <h2>How to Play:</h2>
-                        <p>1. Each round, players are dealt an increasing number of cards (1 to 7)</p>
-                        <p>2. Players bid on how many tricks they think they'll win</p>
-                        <p>3. Making your exact bid scores 10 points plus the number of tricks</p>
-                        <p>4. You must follow suit if possible</p>
-                        <p>5. Highest card of the lead suit wins unless trumped</p>
-                        <p>To play a card, drag it to the center area!</p>
-                        <button onclick="startGame()" style="font-size: 1.2em; padding: 10px 20px; margin-top: 20px;">Start Game</button>
-                    </div>
-                </div>
-            `;
+            const toggleRules = document.getElementById('toggle-rules');
+            const rulesContent = document.getElementById('rules-content');
             
+            if (toggleRules && rulesContent) {
+                toggleRules.addEventListener('click', () => {
+                    const isHidden = rulesContent.style.display === 'none';
+                    rulesContent.style.display = isHidden ? 'block' : 'none';
+                    toggleRules.textContent = isHidden ? 'Hide Rules' : 'Show Rules';
+                });
+            }
+
             window.startGame = () => {
+                const gameContainer = document.querySelector('.game-container');
+                if (gameContainer) {
+                    gameContainer.innerHTML = '<div id="game-container"></div>';
+                }
                 new OhHellGame('game-container');
             };
         });
