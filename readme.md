@@ -20,6 +20,7 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - Play 'Oh Hell!' (Also known as 'contract whist', [https://en.wikipedia.org/wiki/Oh_hell](https://en.wikipedia.org/wiki/Oh_hell))
 - Also a vanilla javascript implementation
 - TODOs
+  - In my efforts to make the UI size better, I have made it so the game is too zoomed in. That needs to be fixed.
   - Scoring needs to count tricks even if you miss your bid
   - I ran into a crash somewhere but haven't been able to track it down again
   - The dealer pin isn't properly passed around. I've tracked this to the bidding logic but not sure what about it is wrong. 

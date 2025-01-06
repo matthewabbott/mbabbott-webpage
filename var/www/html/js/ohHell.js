@@ -26,61 +26,68 @@ class OhHellGame {
         this.gameSpeed = 1; // Default speed multiplier
         this.BASE_DELAY = 1000; // Base delay in milliseconds
 		
-		const gameContainer = document.querySelector('.game-container');
-        if (gameContainer) {
-            gameContainer.innerHTML = '<div id="game-container"></div>';
-        }
-		
-        this.setupCardHandling();
         this.initializeGame();
+        this.setupCardHandling();
     }
 
 	initializeGame() {
 		this.container.innerHTML = `
 			<style>
-                .game-layout {
+				.game-layout {
                     display: flex;
-                    min-height: 800px;
+                    min-height: 80vh;
                     width: 100%;
+                    gap: 20px;
                 }
                 .sidebar {
-                    width: 300px;
+                    width: 25%;
                     min-width: 250px;
+                    max-width: 300px;
                     background-color: #f8f3e9;
                     border-right: 1px solid #d4c5b9;
                     padding: 20px;
                     box-sizing: border-box;
                     overflow-y: auto;
                 }
-                .main-area {
-                    flex: 1;
-                    position: relative;
-                    padding: 20px;
-                    box-sizing: border-box;
-                }
-
-				.top-ai {
-					position: absolute;
-					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					z-index: 2;
-					margin-top: 10px;
-					text-align: center;
+				.main-area {
+					flex: 1;
+					position: relative;
+					padding: 20px;
+					box-sizing: border-box;
+					display: flex;
+					flex-direction: column;
+					min-width: 0;
+					width: 100%;
 				}
 
 				.center-area {
 					position: relative;
-					margin-top: 120px;
-					height: 400px;
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					min-height: 0;
+					padding: 20px 0;
 					z-index: 1;
-					overflow: visible; /* ensure popups aren't clipped */
+					overflow: visible;
+					width: 100%;
+				}
+
+				.top-ai {
+					position: relative;
+					width: 100%;
+					text-align: center;
+					margin-bottom: 20px;
+					z-index: 2;
 				}
 
 				.side-ai-container {
-					width: 140px;
+					width: 15%;
+					min-width: 100px;
+					max-width: 140px;
 					position: absolute;
-					top: 45%;
+					top: 50%;
 					transform: translateY(-50%);
 					z-index: 2;
 				}
@@ -105,16 +112,17 @@ class OhHellGame {
 				.hidden-card.overlapped {
 					margin: -80px 0 0 0;
 				}
-                #trick-area {
-                    width: 400px;
-                    height: 300px;
-                    border: 1px solid #d4c5b9;
-                    border-radius: 12px;
-                    margin: 0 auto;
-                    position: relative;
-                    z-index: 2;
-                    background-color: rgba(248, 243, 233, 0.5);
-                }
+				#trick-area {
+					width: 100%;
+					max-width: 800px;
+					aspect-ratio: 4/3;
+					border: 1px solid #d4c5b9;
+					border-radius: 12px;
+					margin: 0 auto;
+					position: relative;
+					z-index: 2;
+					background-color: rgba(248, 243, 233, 0.5);
+				}
                 #card-slot {
                     display: none;
                     position: absolute;
@@ -125,10 +133,8 @@ class OhHellGame {
                 }
 
 				.player-area {
-					position: absolute;
-					bottom: 20px;
-					left: 50%;
-					transform: translateX(-50%);
+					position: relative;
+					margin-top: 20px;
 					text-align: center;
 					width: 100%;
 				}
@@ -187,6 +193,21 @@ class OhHellGame {
                     display: flex;
                     justify-content: space-between;
                     margin-bottom: 5px;
+                }
+				
+				@media (max-width: 1024px) {
+                    .game-layout {
+                        flex-direction: column;
+                    }
+                    .sidebar {
+                        width: 100%;
+                        max-width: none;
+                        border-right: none;
+                        border-bottom: 1px solid #d4c5b9;
+                    }
+                    .main-area {
+                        height: 70vh;
+                    }
                 }
             </style>
 
@@ -253,13 +274,13 @@ class OhHellGame {
 					</div>
 
 					<!-- Left AI -->
-					<div class="side-ai-container" style="left: 20px;">
+					<div class="side-ai-container" style="left: 5%;">
 						<div id="left-ai-info" class="side-ai-info"></div>
 						<div id="left-ai-cards" class="side-ai-cards"></div>
 					</div>
 
 					<!-- Right AI -->
-					<div class="side-ai-container" style="right: 20px;">
+					<div class="side-ai-container" style="right: 5%;">
 						<div id="right-ai-info" class="side-ai-info"></div>
 						<div id="right-ai-cards" class="side-ai-cards"></div>
 					</div>
@@ -297,6 +318,9 @@ class OhHellGame {
 				</div>
 			</div>
 		`;
+		const handContainer = document.getElementById('player-hand');
+		
+		console.log("hand container real? " + (handContainer !== null));
 
         this.setupGlobalUI();
         this.setupBiddingInterface();
@@ -348,6 +372,12 @@ class OhHellGame {
                 speedValue.textContent = `${this.gameSpeed}x`;
             });
         }
+		
+		window.addEventListener('resize', () => {
+			this.renderTrick();
+			this.renderPlayerHand();
+			this.renderAiHands();
+		});
     }
 	
 	getDelay(baseDelay = this.BASE_DELAY) {
@@ -793,10 +823,10 @@ class OhHellGame {
 		
 		// Position cards in diamond formation
 		const positions = [
-			{ left: '50%', top: '75%', transform: 'translate(-50%, -50%)' }, // Bottom (Player)
-			{ left: '25%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }, // Left
-			{ left: '50%', top: '25%', transform: 'translate(-50%, -50%)' }, // Top
-			{ left: '75%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }  // Right
+			{ left: '50%', top: '80%', transform: 'translate(-50%, -50%)' }, // Bottom (Player)
+			{ left: '20%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }, // Left
+			{ left: '50%', top: '20%', transform: 'translate(-50%, -50%)' }, // Top
+			{ left: '80%', top: '50%', transform: 'translate(-50%, -50%) rotate(90deg)' }  // Right
 		];
 		
 		// Add played cards to trick positions
