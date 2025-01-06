@@ -13,13 +13,14 @@ class CardDeck {
         this.values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
         
         // Base physics parameters
-        this.baseFriction = 0.99;
-        this.currentFriction = this.baseFriction;
-        this.restitution = 0.8;
-        this.minSpeed = 0.05;
-        this.collisionDamping = 1.2;
-        this.maxHeldRotation = 15;
-        this.rotationSpeed = 0.3;
+		this.friction = 0.98;        // Base friction (higher = more slippery)
+		this.restitution = 0.5;      // Bounciness of collisions (lower = less bouncy)
+		this.minSpeed = 0.1;         // Speed threshold for stopping
+		this.maxSpeed = 30;          // Simple speed cap
+		this.rotationFriction = 0.95; // Separate friction for rotation
+		this.maxRotationSpeed = 10;   // Cap on rotation speed
+		this.rotationSpeed = 0.3;      // How quickly cards rotate while dragging
+		this.maxHeldRotation = 15;     // Maximum rotation while dragging
         
         // Dynamic friction parameters
         this.maxSystemEnergy = 1000;
@@ -301,228 +302,122 @@ class CardDeck {
         };
     }
 
-    handleMouseUp() {
-        if (!this.currentCard) return;
-        
-        const props = this.currentCard.physicsProps;
-        
-        // Apply release velocity based on recent movement (capped by speed limit)
-        const velocity = this.clampSpeed({
-            x: props.lastDeltaX * 0.8,
-            y: props.lastDeltaY * 0.8
-        }, this.currentMaxSpeed);
-        
-        props.vx = velocity.x;
-        props.vy = velocity.y;
-        
-        // Clamp angular velocity
-        props.angularVelocity = Math.max(
-            -this.maxAngularSpeed,
-            Math.min(this.maxAngularSpeed, props.lastDeltaX * 0.5)
-        );
-        
-        this.isDragging = false;
-        this.currentCard = null;
-    }
+	handleMouseUp() {
+		if (!this.currentCard) return;
+		
+		const props = this.currentCard.physicsProps;
+		
+		// Apply release velocity with simple speed cap
+		props.vx = Math.min(Math.abs(props.lastDeltaX), this.maxSpeed) * Math.sign(props.lastDeltaX) * 0.8;
+		props.vy = Math.min(Math.abs(props.lastDeltaY), this.maxSpeed) * Math.sign(props.lastDeltaY) * 0.8;
+		
+		// Apply release rotation, scaled down
+		props.angularVelocity = props.lastDeltaX * 0.3;
+		
+		this.isDragging = false;
+		this.currentCard = null;
+	}
 
-    resolveCollision(card1, card2) {
-        if (card1 === this.currentCard || card2 === this.currentCard) return;
-        
-        const dx = card2.physicsProps.x - card1.physicsProps.x;
-        const dy = card2.physicsProps.y - card1.physicsProps.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance === 0) return;
-        
-        const nx = dx / distance;
-        const ny = dy / distance;
-        
-        const dvx = card2.physicsProps.vx - card1.physicsProps.vx;
-        const dvy = card2.physicsProps.vy - card1.physicsProps.vy;
-        
-        const normalVelocity = dvx * nx + dvy * ny;
-        
-        if (normalVelocity > 0) return;
-        
-        const impulse = -(1 + this.restitution) * normalVelocity * this.collisionDamping;
-        
-        // Apply impulse with speed limiting
-        const velocity1 = this.clampSpeed({
-            x: card1.physicsProps.vx - impulse * nx * 1.2,
-            y: card1.physicsProps.vy - impulse * ny * 1.2
-        }, this.currentMaxSpeed);
-        
-        const velocity2 = this.clampSpeed({
-            x: card2.physicsProps.vx + impulse * nx * 1.2,
-            y: card2.physicsProps.vy + impulse * ny * 1.2
-        }, this.currentMaxSpeed);
-        
-        card1.physicsProps.vx = velocity1.x;
-        card1.physicsProps.vy = velocity1.y;
-        card2.physicsProps.vx = velocity2.x;
-        card2.physicsProps.vy = velocity2.y;
-        
-        const relativeAngle = Math.atan2(dy, dx);
-        const rotationTransfer = (
-            card1.physicsProps.angularVelocity + 
-            card2.physicsProps.angularVelocity + 
-            (velocity1.x + velocity2.x) * Math.sin(relativeAngle) * 0.5
-        ) * 0.7;
-        
-        // Clamp angular velocities
-        card1.physicsProps.angularVelocity = Math.max(
-            -this.maxAngularSpeed,
-            Math.min(this.maxAngularSpeed, rotationTransfer)
-        );
-        card2.physicsProps.angularVelocity = Math.max(
-            -this.maxAngularSpeed,
-            Math.min(this.maxAngularSpeed, -rotationTransfer)
-        );
-    }
+	resolveCollision(card1, card2) {
+		if (card1 === this.currentCard || card2 === this.currentCard) return;
+		
+		const dx = card2.physicsProps.x - card1.physicsProps.x;
+		const dy = card2.physicsProps.y - card1.physicsProps.y;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+		
+		if (distance === 0) return;
+		
+		// Normalize collision vector
+		const nx = dx / distance;
+		const ny = dy / distance;
+		
+		// Calculate relative velocity
+		const dvx = card2.physicsProps.vx - card1.physicsProps.vx;
+		const dvy = card2.physicsProps.vy - card1.physicsProps.vy;
+		const normalVelocity = dvx * nx + dvy * ny;
+		
+		// Only resolve if objects are moving toward each other
+		if (normalVelocity > 0) return;
+		
+		// Calculate collision impulse
+		// Scaled down by 0.5 to drain energy from the system
+		const impulse = -(1 + this.restitution) * normalVelocity * 0.5;
+		
+		// Apply impulse with speed cap
+		card1.physicsProps.vx = Math.min(Math.abs(card1.physicsProps.vx - impulse * nx), this.maxSpeed) 
+			* Math.sign(card1.physicsProps.vx - impulse * nx);
+		card1.physicsProps.vy = Math.min(Math.abs(card1.physicsProps.vy - impulse * ny), this.maxSpeed)
+			* Math.sign(card1.physicsProps.vy - impulse * ny);
+			
+		card2.physicsProps.vx = Math.min(Math.abs(card2.physicsProps.vx + impulse * nx), this.maxSpeed)
+			* Math.sign(card2.physicsProps.vx + impulse * nx);
+		card2.physicsProps.vy = Math.min(Math.abs(card2.physicsProps.vy + impulse * ny), this.maxSpeed)
+			* Math.sign(card2.physicsProps.vy + impulse * ny);
+		
+		// Rotation transfer
+		const rotationTransfer = (card1.physicsProps.angularVelocity + card2.physicsProps.angularVelocity) * 0.3;
+		card1.physicsProps.angularVelocity = rotationTransfer;
+		card2.physicsProps.angularVelocity = -rotationTransfer;
+	}
 
-    calculateSystemEnergy() {
-        let totalEnergy = 0;
-        
-        for (const card of this.cards) {
-            if (card === this.currentCard) continue;
-            
-            const props = card.physicsProps;
-            // Calculate kinetic energy (speed squared)
-            const speed = Math.sqrt(props.vx * props.vx + props.vy * props.vy);
-            const rotationEnergy = Math.abs(props.angularVelocity);
-            totalEnergy += (speed * speed + rotationEnergy) * this.energyScale;
-        }
-        
-        return totalEnergy;
-    }
-
-    clampSpeed(velocity, maxSpeed) {
-        const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-        if (speed > maxSpeed) {
-            const scale = maxSpeed / speed;
-            return {
-                x: velocity.x * scale,
-                y: velocity.y * scale
-            };
-        }
-        return velocity;
-    }
-
-    updateDynamicSpeedLimit() {
-        const systemEnergy = this.calculateSystemEnergy();
-        const energyRatio = Math.min(systemEnergy / this.maxSystemEnergy, 1);
-        
-        // Smoothly reduce max speed as energy increases
-        this.currentMaxSpeed = this.baseMaxSpeed - 
-            (energyRatio * (this.baseMaxSpeed - this.minMaxSpeed));
-    }
-
-    updateDynamicFriction() {
-        const currentTime = performance.now();
-        const deltaTime = (currentTime - this.lastFrameTime) / 1000;
-        this.lastFrameTime = currentTime;
-        
-        const systemEnergy = this.calculateSystemEnergy();
-        
-        if (systemEnergy > this.maxSystemEnergy) {
-            const energyExcess = systemEnergy - this.maxSystemEnergy;
-            const targetFriction = Math.min(
-                this.baseFriction + (energyExcess / this.maxSystemEnergy) * 0.2,
-                this.maxFriction
-            );
-            
-            const maxIncrease = this.maxFrictionIncreaseRate * deltaTime;
-            const frictionDiff = targetFriction - this.currentFriction;
-            const limitedIncrease = Math.min(frictionDiff, maxIncrease);
-            
-            this.currentFriction = Math.min(
-                this.currentFriction + limitedIncrease,
-                this.maxFriction
-            );
-        } else {
-            this.currentFriction = Math.min(
-                this.currentFriction + this.frictionRecoveryRate,
-                this.baseFriction
-            );
-        }
-    }
-
-    updatePhysics() {
-        this.updateDynamicFriction();
-        this.updateDynamicSpeedLimit();
-        
-        for (const card of this.cards) {
-            if (card === this.currentCard) continue;
-            
-            const props = card.physicsProps;
-            
-            // Clamp current velocity to speed limit
-            const velocity = this.clampSpeed({
-                x: props.vx,
-                y: props.vy
-            }, this.currentMaxSpeed);
-            
-            props.vx = velocity.x;
-            props.vy = velocity.y;
-            
-            // Apply movement
-            props.x += props.vx;
-            props.y += props.vy;
-            
-            // Clamp and apply angular velocity
-            props.angularVelocity = Math.max(
-                -this.maxAngularSpeed,
-                Math.min(this.maxAngularSpeed, props.angularVelocity)
-            );
-            props.angle += props.angularVelocity;
-            
-            // Apply friction
-            props.vx *= this.currentFriction;
-            props.vy *= this.currentFriction;
-            props.angularVelocity *= this.currentFriction;
-            
-            // Stop if moving very slowly
-            if (Math.abs(props.vx) < this.minSpeed) props.vx = 0;
-            if (Math.abs(props.vy) < this.minSpeed) props.vy = 0;
-            if (Math.abs(props.angularVelocity) < this.minSpeed) props.angularVelocity = 0;
-            
-            // Handle wall collisions
-            const windowPadding = 20;
-            if (props.x < windowPadding) {
-                props.x = windowPadding;
-                props.vx = Math.min(Math.abs(props.vx) * this.restitution, this.currentMaxSpeed);
-                props.angularVelocity *= -0.8;
-            } else if (props.x > window.innerWidth - 128 - windowPadding) {
-                props.x = window.innerWidth - 128 - windowPadding;
-                props.vx = Math.max(-Math.abs(props.vx) * this.restitution, -this.currentMaxSpeed);
-                props.angularVelocity *= -0.8;
-            }
-            
-            if (props.y < windowPadding) {
-                props.y = windowPadding;
-                props.vy = Math.min(Math.abs(props.vy) * this.restitution, this.currentMaxSpeed);
-            } else if (props.y > window.innerHeight - 192 - windowPadding) {
-                props.y = window.innerHeight - 192 - windowPadding;
-                props.vy = Math.max(-Math.abs(props.vy) * this.restitution, -this.currentMaxSpeed);
-            }
-            
-            this.updateCardPosition(card);
-        }
-        
-        // Check for collisions
-        for (let i = 0; i < this.cards.length; i++) {
-            for (let j = i + 1; j < this.cards.length; j++) {
-                const card1 = this.cards[i];
-                const card2 = this.cards[j];
-                
-                if (this.checkCollision(card1, card2)) {
-                    this.resolveCollision(card1, card2);
-                }
-            }
-        }
-        
-        requestAnimationFrame(this.updatePhysics);
-    }
+	updatePhysics() {
+		for (const card of this.cards) {
+			if (card === this.currentCard) continue;
+			
+			const props = card.physicsProps;
+			
+			// Apply movement
+			props.x += props.vx;
+			props.y += props.vy;
+			props.angle += props.angularVelocity;
+			
+			// Apply constant friction
+			props.vx *= this.friction;
+			props.vy *= this.friction;
+			props.angularVelocity *= this.rotationFriction;
+			
+			// Stop if moving very slowly
+			if (Math.abs(props.vx) < this.minSpeed) props.vx = 0;
+			if (Math.abs(props.vy) < this.minSpeed) props.vy = 0;
+			if (Math.abs(props.angularVelocity) < this.minSpeed) props.angularVelocity = 0;
+			
+			// Handle wall collisions
+			const windowPadding = 20;
+			if (props.x < windowPadding) {
+				props.x = windowPadding;
+				props.vx = Math.abs(props.vx) * this.restitution;
+				props.angularVelocity *= -0.5;
+			} else if (props.x > window.innerWidth - 128 - windowPadding) {
+				props.x = window.innerWidth - 128 - windowPadding;
+				props.vx = -Math.abs(props.vx) * this.restitution;
+				props.angularVelocity *= -0.5;
+			}
+			
+			if (props.y < windowPadding) {
+				props.y = windowPadding;
+				props.vy = Math.abs(props.vy) * this.restitution;
+			} else if (props.y > window.innerHeight - 192 - windowPadding) {
+				props.y = window.innerHeight - 192 - windowPadding;
+				props.vy = -Math.abs(props.vy) * this.restitution;
+			}
+			
+			this.updateCardPosition(card);
+		}
+		
+		// Check for collisions
+		for (let i = 0; i < this.cards.length; i++) {
+			for (let j = i + 1; j < this.cards.length; j++) {
+				const card1 = this.cards[i];
+				const card2 = this.cards[j];
+				
+				if (this.checkCollision(card1, card2)) {
+					this.resolveCollision(card1, card2);
+				}
+			}
+		}
+		
+		requestAnimationFrame(this.updatePhysics);
+	}
     
     checkCollision(card1, card2) {
         const margin = 20; // Reduced collision box for more natural-looking interactions
