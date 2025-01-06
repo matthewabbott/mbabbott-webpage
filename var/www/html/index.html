@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=3.0">
     <title>Matthew B. Abbott</title>
     <style>
         body {
@@ -116,6 +116,8 @@
             margin-top: auto;
             color: #6b4d3c;
             font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
         }
 
         #card-container {
@@ -132,11 +134,20 @@
             pointer-events: auto;
         }
 
+        /* Add spacer for mobile scroll area */
+        .mobile-scroll-area {
+            min-height: 100vh;
+            width: 100%;
+            margin-top: 2rem;
+            background-color: #f8f3e9;
+        }
+
         @media (max-width: 800px) {
             .main-container {
                 grid-template-columns: 1fr;
                 margin: 1rem;
                 padding: 1rem;
+                margin-bottom: 0;
             }
 
             h1 {
@@ -145,6 +156,12 @@
 
             .content-sections {
                 grid-template-columns: 1fr;
+            }
+
+            @media (orientation: landscape) {
+                .mobile-scroll-area {
+                    min-height: 150vh;
+                }
             }
         }
     </style>
@@ -164,7 +181,6 @@
                         <div class="link-card">
                             <a href="/oh-hell.html">'Oh Hell!' Card Game</a>
                         </div>
-                        
                     </div>
                 </div>
 
@@ -188,17 +204,19 @@
             </div>
         </div>
     </div>
+    
+    <div class="mobile-scroll-area"></div>
 
     <footer>
         &copy; 2025 Matthew B. Abbott
     </footer>
 
-	<script type="module">
-		import { CardDeck } from './js/cardDeck/cardDeck.js';
-		
-		document.addEventListener('DOMContentLoaded', () => {
-			new CardDeck('card-container');
-		});
-	</script>
+    <script type="module">
+        import { CardDeck } from './js/cardDeck/cardDeck.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new CardDeck('card-container');
+        });
+    </script>
 </body>
 </html>

@@ -15,6 +15,7 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - Click the deck to spawn new cards
 - Drag cards around the screen
 - Vanilla javascript implementation (the 'physics' are bespoke)
+- Try it on mobile too!
 - TODOs
   - Add physics options to give people the ability to make things more slidey as they desire
   - Deck depletion behavior (right now you can draw duplicates)
@@ -24,6 +25,7 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - Play 'Oh Hell!' (Also known as 'contract whist', [https://en.wikipedia.org/wiki/Oh_hell](https://en.wikipedia.org/wiki/Oh_hell))
 - Also a vanilla javascript implementation
 - TODOs
+  - Make this work on mobile
   - Scoring needs to count tricks even if you miss your bid
   - I ran into a crash somewhere but haven't been able to track it down again
   - The dealer pin isn't properly passed around. I've tracked this to the bidding logic but not sure what about it is wrong. 
