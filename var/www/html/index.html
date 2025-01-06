@@ -193,11 +193,12 @@
         &copy; 2025 Matthew B. Abbott
     </footer>
 
-    <script src="/js/cardDeck.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            new CardDeck('card-container');
-        });
-    </script>
+	<script type="module">
+		import { CardDeck } from './js/cardDeck/cardDeck.js';
+		
+		document.addEventListener('DOMContentLoaded', () => {
+			new CardDeck('card-container');
+		});
+	</script>
 </body>
 </html>
