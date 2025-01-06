@@ -238,31 +238,35 @@ class CardDeck {
         card.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
     }
     
-    handleMouseDown(e, card) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        this.isDragging = true;
-        this.currentCard = card;
-        
-        const rect = card.getBoundingClientRect();
-        this.offset = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
-        
-        this.lastMousePos = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        
-        // Reset velocities when grabbed
-        card.physicsProps.vx = 0;
-        card.physicsProps.vy = 0;
-        card.physicsProps.angularVelocity = 0;
-        
-        card.style.zIndex = Date.now();
-    }
+	handleMouseDown(e, card) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		this.isDragging = true;
+		this.currentCard = card;
+		
+		const rect = card.getBoundingClientRect();
+		this.offset = {
+			x: e.clientX - rect.left,
+			y: e.clientY - rect.top
+		};
+		
+		this.lastMousePos = {
+			x: e.clientX,
+			y: e.clientY
+		};
+		
+		// Initialize lastDelta values to prevent undefined access on quick click
+		card.physicsProps.lastDeltaX = 0;
+		card.physicsProps.lastDeltaY = 0;
+		
+		// Reset velocities when grabbed
+		card.physicsProps.vx = 0;
+		card.physicsProps.vy = 0;
+		card.physicsProps.angularVelocity = 0;
+		
+		card.style.zIndex = Date.now();
+	}
     
 	handleMouseMove(e) {
 		if (!this.isDragging || !this.currentCard) return;
@@ -308,6 +312,10 @@ class CardDeck {
 		if (!this.currentCard) return;
 		
 		const props = this.currentCard.physicsProps;
+		
+		// Safety check - make sure lastDelta values exist
+		props.lastDeltaX = props.lastDeltaX || 0;
+		props.lastDeltaY = props.lastDeltaY || 0;
 		
 		// Apply release velocity with simple speed cap
 		props.vx = Math.min(Math.abs(props.lastDeltaX), this.maxSpeed) * Math.sign(props.lastDeltaX) * 0.8;

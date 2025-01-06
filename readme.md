@@ -15,8 +15,10 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - Click the deck to spawn new cards
 - Drag cards around the screen
 - Vanilla javascript implementation (the 'physics' are bespoke)
-- The physics are still a bit tricky. Collisions seem to increase the total force in the system? My vanilla javascript physics engine is a bit rudimentary. I'll fix it someday, surely...
-- Also when you spawn too many cards, the max energy thing just makes them totally stop in place
+- TODOs
+  - Add physics options to give people the ability to make things more slidey as they desire
+  - Deck depletion behavior (right now you can draw duplicates)
+    - Have 'clear cards' instead be 'reshuffle' and suck in all drawn cards
 
 ### Oh Hell Card Game
 - Play 'Oh Hell!' (Also known as 'contract whist', [https://en.wikipedia.org/wiki/Oh_hell](https://en.wikipedia.org/wiki/Oh_hell))
