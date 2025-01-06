@@ -35,7 +35,7 @@ class OhHellGame {
 			<style>
 				.game-layout {
 					display: flex;
-					height: 100vh;
+					height: 90vh;
 					width: 100%;
 					gap: 20px;
 				}
@@ -340,9 +340,6 @@ class OhHellGame {
 					</div>
 				</div>
 			</div>`;
-
-			const handContainer = document.getElementById('player-hand');
-			console.log("hand container real? " + (handContainer !== null));
 			
 			this.setupGlobalUI();
 			this.setupBiddingInterface();
