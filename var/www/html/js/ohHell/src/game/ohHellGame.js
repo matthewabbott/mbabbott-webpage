@@ -1,10 +1,10 @@
-// src/game/OhHellGame.js
-import { Player } from '../models/Player';
-import { DeckManager } from '../utils/DeckManager';
-import { GameState } from '../utils/GameState';
-import { TrickEvaluator } from '../utils/TrickEvaluator';
-import { GameUI } from '../ui/GameUI';
-import { AIPlayer } from '../ai/AIPlayer';
+// src/game/ohHellGame.js
+import { Player } from '../models/player.js';
+import { DeckManager } from '../utils/deckManager.js';
+import { GameState } from '../utils/gameState.js';
+import { TrickEvaluator } from '../utils/trickEvaluator.js';
+import { GameUI } from '../ui/gameUI.js';
+import { AIPlayer } from '../ai/aiPlayer.js';
 
 export class OhHellGame {
     constructor(containerId) {

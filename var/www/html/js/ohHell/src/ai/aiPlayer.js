@@ -1,4 +1,4 @@
-// src/ai/AIPlayer.js
+// src/ai/aiPlayer.js
 export class AIPlayer {
     static calculateBid(hand, trumpSuit, maxBid, trickEvaluator) {
         let expectedTricks = 0;

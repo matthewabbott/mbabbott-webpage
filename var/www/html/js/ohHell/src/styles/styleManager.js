@@ -1,4 +1,4 @@
-// src/styles/StyleManager.js
+// src/styles/styleManager.js
 export class StyleManager {
     static initializeStyles() {
         const style = document.createElement('style');

@@ -1,4 +1,8 @@
 // src/ui/gameUI.js
+import { DragDropManager } from './dragDropManager.js';
+import { BiddingUI } from './biddingUI.js';
+import { CardRenderer } from './cardRenderer.js';
+
 export class GameUI {
     constructor(container, gameState, players, trickEvaluator) {
         this.container = container;

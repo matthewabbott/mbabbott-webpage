@@ -1,4 +1,4 @@
-// src/ui/CardRenderer.js
+// src/ui/cardRenderer.js
 export class CardRenderer {
     static createCardElement(card, index = null) {
         if (!card || !card.suit || !card.value) {
