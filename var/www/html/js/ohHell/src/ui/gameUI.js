@@ -419,7 +419,7 @@ export class GameUI {
 
         content.innerHTML = `
             <h2>Game Over!</h2>
-            <p>${winner.name} wins with ${winner.score} points!</p>
+            <p>${winner.name} win(s) with ${winner.score} points!</p>
             <h3>Final Scores:</h3>
             <ul style="list-style: none; padding: 0;">
                 ${this.players.map(player => 
