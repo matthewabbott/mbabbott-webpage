@@ -206,7 +206,14 @@ export class OhHellGame {
     endRound() {
         // Calculate scores
         this.players.forEach(player => {
-            const roundScore = player.bid === player.tricks ? 10 + player.bid : 0;
+            // Base points for tricks taken
+            let roundScore = player.tricks;
+            
+            // Bonus points for exact bid
+            if (player.bid === player.tricks) {
+                roundScore += 10;  // Bonus for exact bid
+            }
+            
             player.roundScores.push(roundScore);
             player.score += roundScore;
         });

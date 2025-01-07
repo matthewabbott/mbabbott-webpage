@@ -21,14 +21,13 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
   - Add physics options to give people the ability to make things more slidey as they desire
   - Deck depletion behavior (right now you can draw duplicates)
     - Have 'clear cards' instead be 'reshuffle' and suck in all drawn cards
+  - Get rid of the invisible box on the homepage
 
 ### Oh Hell Card Game
 - Play 'Oh Hell!' (Also known as 'contract whist', [https://en.wikipedia.org/wiki/Oh_hell](https://en.wikipedia.org/wiki/Oh_hell))
 - Also a vanilla javascript implementation
 - TODOs
   - Make this work on mobile
-  - Scoring needs to count tricks even if you miss your bid
-  - The dealer pin isn't properly passed around
   - Add a rules popup to the left sidebar
   - Add the option to vary the number of rounds
   - Add ability to view previous tricks
