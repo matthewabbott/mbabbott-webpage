@@ -70,9 +70,45 @@ export class GameUI {
                     </div>
                 </div>
 
-                <div class="main-area">
-                    <!-- Game area content -->
-                </div>
+				<div class="main-area">
+					<div class="top-ai">
+						<div id="top-ai-info"></div>
+						<div id="top-ai-cards"></div>
+					</div>
+
+					<div class="side-ai-container" style="left: 5%;">
+						<div id="left-ai-info" class="side-ai-info"></div>
+						<div id="left-ai-cards" class="side-ai-cards"></div>
+					</div>
+
+					<div class="side-ai-container" style="right: 5%;">
+						<div id="right-ai-info" class="side-ai-info"></div>
+						<div id="right-ai-cards" class="side-ai-cards"></div>
+					</div>
+
+					<div style="position: absolute; top: 20px; right: 20px; text-align: center; z-index: 2;">
+						<div style="margin-bottom: 10px; font-weight: bold;">Trump Suit:</div>
+						<div id="trump-display"></div>
+					</div>
+
+					<div class="center-area">
+						<div id="trick-area">
+							<div id="trick-positions"></div>
+							<div id="card-slot">
+								<div style="position: relative;">
+									<div style="height: 140px; border: 2px dashed #6b4d3c; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+										Drop card here
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="player-area">
+						<div id="player-info"></div>
+						<div id="player-hand"></div>
+					</div>
+				</div>
             </div>`;
 
         this.setupGlobalUI();

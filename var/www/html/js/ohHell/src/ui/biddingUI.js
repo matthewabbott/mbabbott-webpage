@@ -3,7 +3,9 @@ export class BiddingUI {
     constructor(gameUI, gameState) {
         this.gameUI = gameUI;
         this.gameState = gameState;
+        this.onBidSubmitted = null;  // Callback to be set by parent
         this.setupBiddingInterface();
+        this.attachEventListeners();
     }
 
     setupBiddingInterface() {
@@ -33,6 +35,27 @@ export class BiddingUI {
         document.body.appendChild(biddingEl);
     }
 
+    attachEventListeners() {
+        const submitButton = document.getElementById('submit-bid');
+        const bidInput = document.getElementById('bid-input');
+        
+        if (submitButton && bidInput) {
+            submitButton.addEventListener('click', () => {
+                const bid = parseInt(bidInput.value);
+                if (!isNaN(bid) && this.onBidSubmitted) {
+                    this.onBidSubmitted(bid);
+                }
+            });
+
+            // Add keyboard support
+            bidInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    submitButton.click();
+                }
+            });
+        }
+    }
+
     show() {
         const biddingInterface = document.getElementById('bidding-interface');
         if (!biddingInterface) return;
@@ -45,6 +68,7 @@ export class BiddingUI {
         if (bidInput) {
             bidInput.max = this.gameState.currentRound;
             bidInput.value = '0';
+            bidInput.focus();  // Focus the input when shown
         }
         if (cardsInHand) {
             cardsInHand.textContent = this.gameState.currentRound;

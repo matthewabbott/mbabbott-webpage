@@ -1,4 +1,5 @@
 // src/ui/dragDropManager.js
+import { CardRenderer } from './cardRenderer.js';
 export class DragDropManager {
     constructor(gameUI, gameState) {
         this.gameUI = gameUI;

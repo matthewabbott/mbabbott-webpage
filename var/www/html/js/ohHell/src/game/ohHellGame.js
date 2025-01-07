@@ -26,9 +26,15 @@ export class OhHellGame {
             new Player('East AI', true, 3)
         ];
 
-        // Initialize UI last since it depends on other components
-        this.ui = new GameUI(this.container, this.gameState, this.players, this.trickEvaluator);
+        // UI must be last, depends on other components
+        this.ui = new GameUI(
+            this.container, 
+            this.gameState, 
+            this.players, 
+            this.trickEvaluator
+        );
         this.ui.onCardPlayed = this.playCard.bind(this);
+        this.ui.biddingUI.onBidSubmitted = this.submitBid.bind(this);
 
         this.startNewRound();
     }

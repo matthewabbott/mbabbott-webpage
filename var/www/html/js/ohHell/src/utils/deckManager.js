@@ -1,4 +1,5 @@
 // src/utils/deckManager.js
+import { Card } from '../models/card.js';
 export class DeckManager {
     constructor() {
         this.suits = ['♠', '♥', '♦', '♣'];
