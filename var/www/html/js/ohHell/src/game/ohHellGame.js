@@ -125,37 +125,39 @@ export class OhHellGame {
         }
     }
 
-    aiPlay() {
-        const aiIndex = this.gameState.currentPlayer - 1;
-        const aiPlayer = this.players[this.gameState.currentPlayer];
-        
-        const selectedCard = AIPlayer.selectCard(
-            aiPlayer.hand,
-            this.gameState.currentTrick,
-            this.gameState.trumpCard.suit,
-            this.trickEvaluator
-        );
-        
-        if (!selectedCard) {
-            console.error('AI failed to select a card');
-            return;
-        }
-        
-        const cardIndex = aiPlayer.hand.indexOf(selectedCard);
-        const card = aiPlayer.removeCard(cardIndex);
-        
-        this.gameState.currentTrick.push({ card, player: this.gameState.currentPlayer });
-        this.ui.renderGameState();
-        
-        if (this.gameState.currentTrick.length === 4) {
-            setTimeout(() => this.evaluateTrick(), this.gameState.getDelay());
-        } else {
-            this.gameState.currentPlayer = (this.gameState.currentPlayer + 1) % 4;
-            if (this.gameState.currentPlayer !== 0) {
-                setTimeout(() => this.aiPlay(), this.gameState.getDelay());
-            }
-        }
-    }
+	aiPlay() {
+		const aiIndex = this.gameState.currentPlayer - 1;
+		const aiPlayer = this.players[this.gameState.currentPlayer];
+		
+		const selectedCard = AIPlayer.selectCard(
+			aiPlayer.hand,
+			this.gameState.currentTrick,
+			this.gameState.trumpCard.suit,
+			this.trickEvaluator
+		);
+		
+		if (!selectedCard) {
+			console.error('AI failed to select a card');
+			return;
+		}
+		
+		const cardIndex = aiPlayer.hand.indexOf(selectedCard);
+		const card = aiPlayer.removeCard(cardIndex);
+		
+		this.gameState.currentTrick.push({ card, player: this.gameState.currentPlayer });
+		
+		if (this.gameState.currentTrick.length === 4) {
+			this.ui.renderGameState();
+			setTimeout(() => this.evaluateTrick(), this.gameState.getDelay());
+		} else {
+			this.gameState.currentPlayer = (this.gameState.currentPlayer + 1) % 4;
+			this.ui.renderGameState();
+			
+			if (this.gameState.currentPlayer !== 0) {
+				setTimeout(() => this.aiPlay(), this.gameState.getDelay());
+			}
+		}
+	}
 
     evaluateTrick() {
         const winningPlayer = this.trickEvaluator.evaluateTrick(

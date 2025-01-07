@@ -383,14 +383,14 @@ export class GameUI {
         this.renderPlayerHand();
     }
 
-    renderGameState() {
-        this.renderPlayerHand();
-        this.renderAIHands();
-        this.renderTrick();
-        this.updatePlayerInfo();
-        this.updateScoreDisplay();
-        this.updateTrumpDisplay();
-    }
+	renderGameState() {
+		this.renderPlayerHand();
+		this.renderAIHands();
+		this.renderTrick();
+		this.updatePlayerInfo();
+		this.updateScoreDisplay();
+		this.updateTrumpDisplay();
+	}
 
     onCardPlayed(index) {
         // This method should be overridden by the game controller
