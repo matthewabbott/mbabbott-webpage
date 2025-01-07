@@ -126,7 +126,7 @@
 <body>
     <div class="main-container">
         <a href="/" class="nav-link">← Back to Homepage</a>
-        <div class="game-container">
+        <div id="game-container" class="game-container">
             <h1>Oh Hell Card Game</h1>
             <div class="links">
                 <a href="https://en.wikipedia.org/wiki/Oh_hell" target="_blank">Learn More on Wikipedia</a>
@@ -140,26 +140,45 @@
                 <p>4. You must follow suit if possible</p>
                 <p>5. Highest card of the lead suit wins unless trumped</p>
                 <p>To play a card, drag it to the center area!</p>
-                <button onclick="startGame()">Start Game</button>
             </div>
-            <div id="game-container"></div>
+            
+            <button id="start-game-button">Start Game</button>
+            <div id="game-area"></div>
         </div>
     </div>
 
     <footer>
         &copy; 2025 Matthew B. Abbott
     </footer>
-    
-    <script src="/js/ohHell.js"></script>
-    <script>
+
+    <script type="module">
+        // Use absolute paths from root
+        import { OhHellGame } from './js/ohHell/src/game/ohHellGame.js';
+        import { StyleManager } from './js/ohHell/src/styles/styleManager.js';
+
+        // Apply styles immediately
+        StyleManager.initializeStyles();
+        
+        // Add event listener when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            window.startGame = () => {
-                const gameContainer = document.querySelector('.game-container');
-                if (gameContainer) {
-                    gameContainer.innerHTML = '<div id="game-container"></div>';
-                }
-                new OhHellGame('game-container');
-            };
+            const startButton = document.getElementById('start-game-button');
+            const gameArea = document.getElementById('game-area');
+            const preGame = document.querySelector('.pre-game');
+            const gameTitle = document.querySelector('h1');
+            const links = document.querySelector('.links');
+            
+            if (startButton && gameArea) {
+                startButton.addEventListener('click', () => {
+                    // Hide pre-game elements
+                    if (preGame) preGame.style.display = 'none';
+                    if (gameTitle) gameTitle.style.display = 'none';
+                    if (links) links.style.display = 'none';
+                    startButton.style.display = 'none';
+                    
+                    // Initialize game in game area
+                    new OhHellGame('game-area');
+                });
+            }
         });
     </script>
 </body>

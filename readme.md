@@ -28,11 +28,11 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - TODOs
   - Make this work on mobile
   - Scoring needs to count tricks even if you miss your bid
-  - I ran into a crash somewhere but haven't been able to track it down again
-  - The dealer pin isn't properly passed around. I've tracked this to the bidding logic but not sure what about it is wrong. 
-  - Make this less of a monolith (it's become quite cumbersome)
+  - The dealer pin isn't properly passed around
   - Add a rules popup to the left sidebar
   - Add the option to vary the number of rounds
+  - Add ability to view previous tricks
+  - Add ability to rearrange cards in hand and sort hand
 - Been thinking about training AI agents to play the game, but that's a future ambition for now.
 
 ## Technologies Used
