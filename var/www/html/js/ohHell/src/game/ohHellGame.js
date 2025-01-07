@@ -71,13 +71,6 @@ export class OhHellGame {
 
 	submitBid(bid) {
 		console.log('submitBid called with bid:', bid);
-		console.log('Current game state:', {
-			currentPlayer: this.gameState.currentPlayer,
-			dealer: this.gameState.dealer,
-			biddingPhase: this.gameState.biddingPhase,
-			playerAfterDealer: (this.gameState.dealer + 1) % 4
-		});
-
 		if (bid < 0 || bid > this.gameState.currentRound) {
 			alert('Invalid bid!');
 			return;
@@ -89,30 +82,15 @@ export class OhHellGame {
 		// Move to next player
 		this.gameState.currentPlayer = (this.gameState.currentPlayer + 1) % 4;
 		
-		console.log('After human bid:', {
-			allBids: this.players.map(p => p.bid),
-			nextPlayer: this.gameState.currentPlayer,
-			playerAfterDealer: (this.gameState.dealer + 1) % 4
-		});
-
 		if (this.gameState.currentPlayer !== (this.gameState.dealer + 1) % 4) {
-			console.log('Moving to AI bidding');
 			this.makeAiBid();
-		} else {
-			console.log('Bidding complete, transitioning to play phase');
-			this.gameState.biddingPhase = false;
-			this.ui.renderGameState();
+		} else { // All bids are in
+			this.transitionToPlay();
 		}
 	}
 
 	makeAiBid() {
-		console.log('makeAiBid called:', {
-			currentPlayer: this.gameState.currentPlayer,
-			dealer: this.gameState.dealer,
-			biddingPhase: this.gameState.biddingPhase,
-			playerAfterDealer: (this.gameState.dealer + 1) % 4
-		});
-
+		console.log('makeAiBid called');
 		const aiIndex = this.gameState.currentPlayer - 1;
 		const aiPlayer = this.players[this.gameState.currentPlayer];
 		
@@ -126,31 +104,30 @@ export class OhHellGame {
 		aiPlayer.bid = bid;
 		this.ui.updateScoreDisplay();
 		
-		console.log('AI bid made:', {
-			player: this.gameState.currentPlayer,
-			bid: bid,
-			allBids: this.players.map(p => p.bid)
-		});
-
 		// Move to next player
 		this.gameState.currentPlayer = (this.gameState.currentPlayer + 1) % 4;
 		
-		console.log('After AI bid:', {
-			nextPlayer: this.gameState.currentPlayer,
-			playerAfterDealer: (this.gameState.dealer + 1) % 4
-		});
-
 		// Check if we've come full circle to the player after dealer
 		if (this.gameState.currentPlayer === (this.gameState.dealer + 1) % 4) {
 			console.log('Bidding complete in AI phase, transitioning to play');
-			this.gameState.biddingPhase = false;
-			this.ui.renderGameState();
+			this.transitionToPlay();
 		} else if (this.gameState.currentPlayer === 0) {
-			console.log('Moving to human player bid');
 			this.ui.biddingUI.show();
 		} else {
-			console.log('Continuing AI bidding');
 			setTimeout(() => this.makeAiBid(), this.gameState.getDelay());
+		}
+	}
+
+	// Helper method: handle transition from bidding to play phase
+	transitionToPlay() {
+		console.log('Transitioning to play phase');
+		this.gameState.biddingPhase = false;
+		this.ui.renderGameState();
+		
+		// If it's an AI's turn to play first, kick off their play
+		if (this.gameState.currentPlayer !== 0) {
+			console.log('Starting AI play');
+			setTimeout(() => this.aiPlay(), this.gameState.getDelay());
 		}
 	}
 
