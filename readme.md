@@ -27,11 +27,15 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - Play 'Oh Hell!' (Also known as 'contract whist', [https://en.wikipedia.org/wiki/Oh_hell](https://en.wikipedia.org/wiki/Oh_hell))
 - Also a vanilla javascript implementation
 - TODOs
-  - Make this work on mobile
   - Add a rules popup to the left sidebar
   - Add the option to vary the number of rounds
   - Add ability to view previous tricks
   - Add ability to rearrange cards in hand and sort hand
+  - Grey out cards that are illegal to play. (Make it so you can't pick them up?)
+  
+  - Mobile: label trump suit
+  - Mobile: bottom part of cards in hand gets cut off slightly
+  - Mobile: explain in the rules or Game Info how you're supposed to play cards (double tap)
 - Been thinking about training AI agents to play the game, but that's a future ambition for now.
 
 ## Technologies Used

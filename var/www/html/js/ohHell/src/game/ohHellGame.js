@@ -3,8 +3,9 @@ import { Player } from '../models/player.js';
 import { DeckManager } from '../utils/deckManager.js';
 import { GameState } from '../utils/gameState.js';
 import { TrickEvaluator } from '../utils/trickEvaluator.js';
-import { GameUI } from '../ui/gameUI.js';
 import { AIPlayer } from '../ai/aiPlayer.js';
+import { GameUI } from '../ui/gameUI.js';
+import { MobileGameUI } from '../ui/mobileUI.js';
 
 export class OhHellGame {
     constructor(containerId) {
@@ -26,17 +27,33 @@ export class OhHellGame {
             new Player('East AI', true, 3)
         ];
 
-        // UI must be last, depends on other components
-        this.ui = new GameUI(
-            this.container, 
-            this.gameState, 
-            this.players, 
-            this.trickEvaluator
-        );
+        // Choose UI based on device
+        const isMobile = this.detectMobile();
+        this.ui = isMobile ? 
+            new MobileGameUI(
+				this.container, 
+				this.gameState, 
+				this.players, 
+				this.trickEvaluator
+			) :
+            new GameUI(
+				this.container, 
+				this.gameState, 
+				this.players, 
+				this.trickEvaluator
+			);
+            
         this.ui.onCardPlayed = this.playCard.bind(this);
         this.ui.biddingUI.onBidSubmitted = this.submitBid.bind(this);
 
         this.startNewRound();
+    }
+
+    detectMobile() {
+        return (
+            window.innerWidth <= 768 ||
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        );
     }
 
     startNewRound() {
