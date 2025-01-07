@@ -17,6 +17,7 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - Vanilla javascript implementation (the 'physics' are bespoke)
 - Try it on mobile too!
 - TODOs
+  - Allow dragging off the top of the deck
   - Add physics options to give people the ability to make things more slidey as they desire
   - Deck depletion behavior (right now you can draw duplicates)
     - Have 'clear cards' instead be 'reshuffle' and suck in all drawn cards
@@ -43,5 +44,5 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 ## File Structure
 - `index.html` - Main personal webpage
 - `oh-hell.html` - Oh Hell card game page
-- `js/cardDeck.js` - Card toy physics engine implementation
-- `js/ohHell.js` - Oh Hell game logic
+- `js/cardDeck/*` - Card toy physics engine implementation
+- `js/ohHell/*` - Oh Hell game logic
