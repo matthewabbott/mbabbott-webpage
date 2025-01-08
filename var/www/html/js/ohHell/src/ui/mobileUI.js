@@ -94,19 +94,22 @@ export class MobileGameUI {
     addMobileStyles() {
         const style = document.createElement('style');
         style.textContent = `
-            .mobile-game-layout {
-                display: flex;
-                flex-direction: column;
-                height: 100vh;
-                max-height: -webkit-fill-available;
-                overflow: hidden;
-            }
+			.mobile-game-layout {
+				display: flex;
+				flex-direction: column;
+				min-height: 100vh;
+				max-height: -webkit-fill-available;
+				overflow-y: auto; /* Allow vertical scrolling */
+			}
 
-            .mobile-score-panel {
-                background: ${theme.colors.background};
-                border-bottom: 1px solid ${theme.colors.border};
-                transition: height 0.3s ease;
-            }
+			.mobile-score-panel {
+				background: ${theme.colors.background};
+				border-bottom: 1px solid ${theme.colors.border};
+				transition: height 0.3s ease;
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
 
             .score-handle {
                 padding: 10px;
@@ -168,28 +171,46 @@ export class MobileGameUI {
                 text-align: center;
             }
 
-            .mobile-trump-display {
-                transform: scale(0.7);
-            }
+			.mobile-trump-display {
+				position: relative;
+				transform: scale(0.7);
+			}
 
-            .mobile-trick-area {
-                flex: 1;
-                position: relative;
-                border: 1px solid ${theme.colors.border};
-                border-radius: 12px;
-                margin: 10px 0;
-                background-color: rgba(248, 243, 233, 0.5);
-            }
+			.trump-label {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				transform: translateX(-50%);
+				font-weight: bold;
+				color: ${theme.colors.text};
+				background: ${theme.colors.background};
+				padding: 2px 8px;
+				border-radius: 4px;
+				border: 1px solid ${theme.colors.border};
+				white-space: nowrap;
+			}
 
-            .mobile-player-area {
-                height: 160px;
-            }
+			.mobile-trick-area {
+				flex: 1;
+				position: relative;
+				border: 1px solid ${theme.colors.border};
+				border-radius: 12px;
+				margin: 10px 0;
+				padding: 10px;
+				background-color: rgba(248, 243, 233, 0.5);
+			}
+			
+			.mobile-player-area {
+				height: 180px;
+				padding-bottom: 20px;
+			}
 
-            .mobile-hand-scroll {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                padding: 10px 0;
-            }
+			.mobile-hand-scroll {
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
+				padding: 10px 0 20px 0;
+				margin-bottom: 10px;
+			}
 
             .mobile-player-hand {
                 display: inline-flex;
@@ -222,11 +243,41 @@ export class MobileGameUI {
                 margin: -10px;
             }
 
-            .player-turn-indicator {
-                color: ${theme.colors.highlight};
-                font-weight: bold;
-                animation: pulse 1.5s infinite;
-            }
+			.player-turn-indicator {
+				color: ${theme.colors.highlight};
+				font-weight: bold;
+				animation: pulse 1.5s infinite;
+				padding: 4px 12px;
+				background: ${theme.colors.background};
+				border: 2px solid ${theme.colors.highlight};
+				border-radius: 20px;
+				box-shadow: 0 0 10px ${theme.colors.highlight}40;
+			}
+			
+			.play-position-indicator {
+				position: absolute;
+				width: ${theme.card.mobile.width};
+				height: ${theme.card.mobile.height};
+				border: 2px dashed ${theme.colors.primary};
+				border-radius: 5px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background-color: ${theme.colors.primary}10;
+				font-size: 0.9rem;
+				color: ${theme.colors.primary};
+				text-align: center;
+			}
+
+			.play-position-indicator span {
+				opacity: 0.8;
+			}
+
+			@keyframes pulse {
+				0% { transform: scale(1); }
+				50% { transform: scale(1.05); }
+				100% { transform: scale(1); }
+			}
 
             @media (max-height: 600px) {
                 .mobile-top-ai {
@@ -237,10 +288,17 @@ export class MobileGameUI {
                     margin: 5px 0;
                 }
 
-                .mobile-player-area {
-                    height: 140px;
-                }
+				.mobile-player-area {
+					height: 160px;
+					padding-bottom: 15px;
+				}
             }
+			@media (max-width: 350px) {
+				.mobile-left-ai,
+				.mobile-right-ai {
+					width: 30px;
+				}
+			}
         `;
         document.head.appendChild(style);
     }
@@ -344,8 +402,8 @@ export class MobileGameUI {
                 miniCard.className = 'mini-card';
                 miniCard.style.width = '20px';
                 miniCard.style.height = '30px';
-                miniCard.style.backgroundColor = '#fff';
-                miniCard.style.border = '1px solid #000';
+                miniCard.style.backgroundColor = theme.colors.background;
+                miniCard.style.border = `1px solid ${theme.colors.border}`;
                 miniCard.style.borderRadius = '3px';
                 miniCard.style.margin = '0 -5px';
                 wrapper.appendChild(miniCard);
@@ -380,8 +438,8 @@ export class MobileGameUI {
                     miniCard.className = 'mini-card';
                     miniCard.style.width = '15px';
                     miniCard.style.height = '20px';
-                    miniCard.style.backgroundColor = '#fff';
-                    miniCard.style.border = '1px solid #000';
+					miniCard.style.backgroundColor = theme.colors.background;
+					miniCard.style.border = `1px solid ${theme.colors.border}`;
                     miniCard.style.borderRadius = '2px';
                     miniCard.style.position = 'absolute';
                     miniCard.style.top = `${i * 3}px`;
@@ -393,46 +451,65 @@ export class MobileGameUI {
         });
     }
 
-    renderTrick() {
-        const trickPositions = document.getElementById('trick-positions');
-        if (!trickPositions) return;
-        
-        trickPositions.innerHTML = '';
-        
-        // Adjust positions for mobile layout
-        const positions = [
-            { left: '50%', bottom: '10%', transform: 'translate(-50%, 0)' },  // Bottom (player)
-            { left: '10%', top: '50%', transform: 'translate(0, -50%)' },     // Left
-            { left: '50%', top: '10%', transform: 'translate(-50%, 0)' },     // Top
-            { right: '10%', top: '50%', transform: 'translate(0, -50%)' }     // Right
-        ];
-        
-        this.gameState.currentTrick.forEach((play) => {
-            if (!play || !play.card) return;
+	renderTrick() {
+		const trickPositions = document.getElementById('trick-positions');
+		if (!trickPositions) return;
+		
+		trickPositions.innerHTML = '';
+		
+		// Add player position indicator after delay
+		if (this.gameState.currentPlayer === 0 && !this.gameState.biddingPhase) {
+			setTimeout(() => {
+				const placeholderSpot = document.createElement('div');
+				placeholderSpot.className = 'play-position-indicator';
+				placeholderSpot.innerHTML = '<span>tap card<br>to play</span>';
+				Object.assign(placeholderSpot.style, {
+					left: '50%',
+					bottom: '10%',
+					transform: 'translate(-50%, 0)',
+				});
+				trickPositions.appendChild(placeholderSpot);
+			}, this.gameState.getDelay());
+		}
+		
+		// Render played cards
+		const positions = [
+			{ left: '50%', bottom: '10%', transform: 'translate(-50%, 0)' },  // Bottom (player)
+			{ left: '10%', top: '50%', transform: 'translate(0, -50%)' },     // Left
+			{ left: '50%', top: '10%', transform: 'translate(-50%, 0)' },     // Top
+			{ right: '10%', top: '50%', transform: 'translate(0, -50%)' }     // Right
+		];
+		
+		this.gameState.currentTrick.forEach((play) => {
+			if (!play || !play.card) return;
 
-            const cardElement = CardRenderer.createCardElement(play.card);
-            cardElement.classList.add('mobile-trick-card');
-            cardElement.style.position = 'absolute';
-            cardElement.style.zIndex = '2';
-            
-            const position = positions[play.player];
-            if (position) {
-                Object.assign(cardElement.style, position);
-                trickPositions.appendChild(cardElement);
-            }
-        });
-    }
+			const cardElement = CardRenderer.createCardElement(play.card);
+			cardElement.classList.add('mobile-trick-card');
+			cardElement.style.position = 'absolute';
+			cardElement.style.zIndex = '2';
+			
+			const position = positions[play.player];
+			if (position) {
+				Object.assign(cardElement.style, position);
+				trickPositions.appendChild(cardElement);
+			}
+		});
+	}
 
-    updateTrumpDisplay() {
-        const trumpDisplay = document.getElementById('trump-display');
-        if (!trumpDisplay || !this.gameState.trumpCard) return;
+	updateTrumpDisplay() {
+		const trumpDisplay = document.getElementById('trump-display');
+		if (!trumpDisplay || !this.gameState.trumpCard) return;
 
-        const trumpElement = CardRenderer.createCardElement(this.gameState.trumpCard);
-        trumpElement.classList.add('mobile-trump-card');
-        trumpElement.style.transform = 'scale(0.6)';
-        trumpDisplay.innerHTML = '';
-        trumpDisplay.appendChild(trumpElement);
-    }
+		trumpDisplay.innerHTML = `
+			<div class="trump-label">Trump</div>
+			<div class="trump-card-container"></div>
+		`;
+		
+		const trumpElement = CardRenderer.createCardElement(this.gameState.trumpCard);
+		trumpElement.classList.add('mobile-trump-card');
+		trumpElement.style.transform = 'scale(0.6)';
+		trumpDisplay.querySelector('.trump-card-container').appendChild(trumpElement);
+	}
 
     updateScoreDisplay() {
         const summaryTable = document.getElementById('mobile-score-summary');
@@ -448,47 +525,40 @@ export class MobileGameUI {
         `).join('');
     }
 
-    updatePlayerInfo() {
-        const playerInfo = document.getElementById('player-info');
-        if (!playerInfo) return;
+	updatePlayerInfo() {
+		const playerInfo = document.getElementById('player-info');
+		if (!playerInfo) return;
+		
+		playerInfo.innerHTML = `
+			<div class="mobile-player-stats">
+				<div class="player-stats-content">
+					<span>Tricks: ${this.players[0].tricks}</span>
+					<span>Bid: ${this.players[0].bid}</span>
+				</div>
+			</div>
+		`;
 
-        const isPlayerTurn = this.gameState.currentPlayer === 0 && !this.gameState.biddingPhase;
-        
-        playerInfo.innerHTML = `
-            <div class="mobile-player-stats">
-                <span>Tricks: ${this.players[0].tricks}</span>
-                <span>Bid: ${this.players[0].bid}</span>
-                ${isPlayerTurn ? '<span class="player-turn-indicator">Your Turn!</span>' : ''}
-            </div>
-        `;
+		if (!document.querySelector('#mobile-turn-styles')) {
+			const style = document.createElement('style');
+			style.id = 'mobile-turn-styles';
+			style.textContent = `
+				.mobile-player-stats {
+					display: flex;
+					justify-content: center;
+					gap: 20px;
+					margin-bottom: 10px;
+					padding: 5px;
+				}
 
-        // Add turn indicator styles if not already present
-        if (!document.querySelector('#mobile-turn-styles')) {
-            const style = document.createElement('style');
-            style.id = 'mobile-turn-styles';
-            style.textContent = `
-                .player-turn-indicator {
-                    color: #0073b1;
-                    font-weight: bold;
-                    animation: pulse 1.5s infinite;
-                }
-                
-                @keyframes pulse {
-                    0% { opacity: 1; }
-                    50% { opacity: 0.6; }
-                    100% { opacity: 1; }
-                }
-
-                .mobile-player-stats {
-                    display: flex;
-                    justify-content: center;
-                    gap: 20px;
-                    margin-bottom: 10px;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    }
+				.player-stats-content {
+					display: flex;
+					gap: 20px;
+					font-weight: bold;
+				}
+			`;
+			document.head.appendChild(style);
+		}
+	}
 
     showEndGameScreen(winner) {
         const overlay = document.createElement('div');

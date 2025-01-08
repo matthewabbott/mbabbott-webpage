@@ -33,9 +33,8 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
   - Add ability to rearrange cards in hand and sort hand
   - Grey out cards that are illegal to play. (Make it so you can't pick them up?)
   
-  - Mobile: label trump suit
-  - Mobile: bottom part of cards in hand gets cut off slightly
-  - Mobile: explain in the rules or Game Info how you're supposed to play cards (double tap)
+  - Mobile: make game container a little bigger? Or allow zooming out
+  - Mobile: make game info dropdown more obvious
 - Been thinking about training AI agents to play the game, but that's a future ambition for now.
 
 ## Technologies Used
