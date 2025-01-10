@@ -17,16 +17,17 @@
             line-height: 1.6;
         }
 
-        .main-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: minmax(300px, 2fr) minmax(300px, 1fr);
-            gap: 2rem;
-            position: relative;
-            z-index: 1;
-        }
+		.main-container {
+			max-width: 1200px;
+			margin: 2rem auto;
+			padding: 2rem;
+			display: grid;
+			grid-template-columns: minmax(300px, 2fr) minmax(300px, 1fr);
+			gap: 2rem;
+			position: relative;
+			z-index: 1;
+			pointer-events: none;
+		}
 
         .info-section {
             background: #fff;
@@ -34,6 +35,7 @@
             border: 1px solid #d4c5b9;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+			pointer-events: auto;
         }
 
         .card-section {
