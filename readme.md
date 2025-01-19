@@ -9,6 +9,13 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - View [my LinkedIn](https://www.linkedin.com/in/matthew-abbott-88390065/)
 - [Email Me](mailto:ttobbatam+website@gmail.com)
 
+## Projects
+
+- Personal Knowledge Base: https://github.com/matthewabbott/personal-kb
+  - React + Typescript
+- Embedded Semantic Search: https://github.com/matthewabbott/embedded-semantic
+  - Svelte + Rust
+
 ## Games & Interactive Elements
 
 ### Cards on the homepage
@@ -40,11 +47,4 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 ## Technologies Used
 - HTML5
 - CSS3
-- Vanilla JavaScript
-- No external dependencies (yet), except that google font I used.
-
-## File Structure
-- `index.html` - Main personal webpage
-- `oh-hell.html` - Oh Hell card game page
-- `js/cardDeck/*` - Card toy physics engine implementation
-- `js/ohHell/*` - Oh Hell game logic
+- JavaScript
