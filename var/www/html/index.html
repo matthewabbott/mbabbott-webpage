@@ -17,6 +17,48 @@
             line-height: 1.6;
         }
 
+        .top-nav {
+            background: #fff;
+            border-bottom: 1px solid #d4c5b9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #2c1810;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #6b4d3c;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #2c1810;
+        }
+
 		.main-container {
 			max-width: 1200px;
 			margin: 2rem auto;
@@ -170,6 +212,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">Matthew B. Abbott</a>
+            <div class="nav-links">
+                <a href="/blog.html" class="nav-link">Blog</a>
+                <a href="#" class="nav-link">Projects</a>
+                <a href="#" class="nav-link">Toys</a>
+                <a href="#" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
     <div id="card-container"></div>
     <div class="main-container">
         <div class="info-section">
