@@ -114,6 +114,71 @@
             border-radius: 0 0 8px 8px;
         }
 
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-hamburger span {
+            width: 24px;
+            height: 3px;
+            background: #2c1810;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        @media (max-width: 800px) {
+            .nav-hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #fff;
+                border-top: 1px solid #d4c5b9;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 1rem 2rem;
+                border-bottom: 1px solid #d4c5b9;
+            }
+
+            .nav-dropdown {
+                position: static;
+            }
+
+            .nav-dropdown-menu {
+                position: static;
+                margin: 0;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                background: #f8f3e9;
+            }
+
+            .nav-dropdown-menu a {
+                padding-left: 3rem;
+            }
+
+            .nav-container {
+                position: relative;
+            }
+        }
+
 		.main-container {
 			max-width: 1200px;
 			margin: 2rem auto;
@@ -367,6 +432,11 @@
     <nav class="top-nav">
         <div class="nav-container">
             <a href="/" class="nav-brand">Matthew B. Abbott</a>
+            <div class="nav-hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
             <div class="nav-links">
                 <a href="/blog.html" class="nav-link">Blog</a>
                 <div class="nav-dropdown">
@@ -442,6 +512,22 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             new CardDeck('card-container');
+
+            // Hamburger menu functionality
+            const hamburger = document.querySelector('.nav-hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            hamburger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navLinks.classList.toggle('show');
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.nav-container')) {
+                    navLinks.classList.remove('show');
+                }
+            });
 
             // Dropdown functionality
             const dropdowns = document.querySelectorAll('.nav-dropdown');
