@@ -59,6 +59,61 @@
             color: #2c1810;
         }
 
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .nav-dropdown-toggle::after {
+            content: '▼';
+            font-size: 0.7rem;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            background: #fff;
+            border: 1px solid #d4c5b9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 200;
+        }
+
+        .nav-dropdown-menu.show {
+            display: block;
+        }
+
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #6b4d3c;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .nav-dropdown-menu a:hover {
+            background-color: #f8f3e9;
+            color: #2c1810;
+        }
+
+        .nav-dropdown-menu a:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-dropdown-menu a:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
 		.main-container {
 			max-width: 1200px;
 			margin: 2rem auto;
@@ -217,9 +272,21 @@
             <a href="/" class="nav-brand">Matthew B. Abbott</a>
             <div class="nav-links">
                 <a href="/blog.html" class="nav-link">Blog</a>
-                <a href="#" class="nav-link">Projects</a>
-                <a href="#" class="nav-link">Toys</a>
-                <a href="#" class="nav-link">Contact</a>
+                <div class="nav-dropdown">
+                    <span class="nav-link nav-dropdown-toggle">Projects</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="/personal-kb/">Personal Knowledge Base</a>
+                        <a href="/semantic-search/">Embedded Semantic Search</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <span class="nav-link nav-dropdown-toggle">Toys</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="/dice/">TTRPG Dice Roller</a>
+                        <a href="/oh-hell.html">Oh Hell! Card Game</a>
+                    </div>
+                </div>
+                <a href="#contact" class="nav-link">Contact</a>
             </div>
         </div>
     </nav>
@@ -277,9 +344,36 @@
 
     <script type="module">
         import { CardDeck } from './js/cardDeck/cardDeck.js';
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             new CardDeck('card-container');
+
+            // Dropdown functionality
+            const dropdowns = document.querySelectorAll('.nav-dropdown');
+
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+                const menu = dropdown.querySelector('.nav-dropdown-menu');
+
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Close all other dropdowns
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.querySelector('.nav-dropdown-menu').classList.remove('show');
+                        }
+                    });
+                    // Toggle current dropdown
+                    menu.classList.toggle('show');
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', () => {
+                dropdowns.forEach(dropdown => {
+                    dropdown.querySelector('.nav-dropdown-menu').classList.remove('show');
+                });
+            });
         });
     </script>
 </body>
