@@ -48,3 +48,55 @@ A website with stuff I made and info about me. Check it out at [https://mbabbott
 - HTML5
 - CSS3
 - JavaScript
+- Marked.js (for rendering GitHub READMEs)
+
+## How Deployment Works
+
+This is pretty simple. The source files live in `~/mbabbott-webpage/var/www/html/`, and I deploy by copying them to `/var/www/html/` where nginx serves them.
+
+### Deploying the Main Site
+
+```bash
+# Make your changes in ~/mbabbott-webpage/var/www/html/
+# Then deploy:
+sudo cp -r ~/mbabbott-webpage/var/www/html/* /var/www/html/
+sudo chown -R www-data:www-data /var/www/html/
+
+# Commit your changes
+cd ~/mbabbott-webpage
+git add .
+git commit -m "your message here"
+```
+
+### Deploying the Resume
+
+```bash
+sudo cp ~/mbabbott-webpage/var/www/html/resume.pdf /var/www/html/resume.pdf
+```
+
+### Server Setup
+
+The site runs on a VPS with:
+- **nginx** serving static files from `/var/www/html/`
+- **PM2** managing backend servers for interactive apps:
+  - personal-kb server on port 3001
+  - dice-roller server on port 4000
+- **Let's Encrypt** for SSL
+
+nginx config lives at `/etc/nginx/sites-available/default` and handles:
+- Static files for the main site
+- Proxying API requests to PM2-managed servers
+- Sub-apps at `/dice/`, `/personal-kb/`, `/semantic-search/`, etc.
+
+For detailed deployment steps for specific apps, see:
+- `_dice-roller_deployment_steps.md` for the dice roller app
+
+### Featured Section
+
+The homepage Featured section dynamically loads README content from GitHub repos. To change what's featured, edit the `repo` variable in the `loadFeaturedReadme()` function in `index.html`:
+
+```javascript
+const repo = 'matthewabbott/terrarium-agent';  // Change this to feature a different repo
+```
+
+The system is set up to make rotating featured projects easy in the future.
