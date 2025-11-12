@@ -1,0 +1,63 @@
+/* Shared Vine Decoration Styles */
+/* Include this CSS file in any page that needs vine decorations */
+
+/* Overgrown Vines Theme */
+.vine-decoration {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.3;
+}
+
+.vine-left {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 150px;
+}
+
+.vine-right {
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 150px;
+}
+
+.vine-top-corner-left {
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 200px;
+}
+
+.vine-top-corner-right {
+    right: 0;
+    top: 0;
+    width: 200px;
+    height: 200px;
+}
+
+.vine-bottom-corner-left {
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    height: 250px;
+}
+
+.vine-bottom-corner-right {
+    right: 0;
+    bottom: 0;
+    width: 250px;
+    height: 250px;
+}
+
+@media (max-width: 800px) {
+    .vine-decoration {
+        opacity: 0.15;
+    }
+
+    .vine-left,
+    .vine-right {
+        width: 80px;
+    }
+}
