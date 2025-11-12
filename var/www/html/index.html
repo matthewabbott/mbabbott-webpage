@@ -15,6 +15,68 @@
             display: flex;
             flex-direction: column;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Overgrown Vines Theme */
+        .vine-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .vine-left {
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 150px;
+        }
+
+        .vine-right {
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 150px;
+        }
+
+        .vine-top-corner-left {
+            left: 0;
+            top: 0;
+            width: 200px;
+            height: 200px;
+        }
+
+        .vine-top-corner-right {
+            right: 0;
+            top: 0;
+            width: 200px;
+            height: 200px;
+        }
+
+        .vine-bottom-corner-left {
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            height: 250px;
+        }
+
+        .vine-bottom-corner-right {
+            right: 0;
+            bottom: 0;
+            width: 250px;
+            height: 250px;
+        }
+
+        @media (max-width: 800px) {
+            .vine-decoration {
+                opacity: 0.15;
+            }
+
+            .vine-left, .vine-right {
+                width: 80px;
+            }
         }
 
         .top-nav {
@@ -93,25 +155,90 @@
             display: block;
         }
 
-        .nav-dropdown-menu a {
-            display: block;
+        .nav-dropdown-menu .tooltip-wrapper {
             padding: 0.75rem 1rem;
-            color: #6b4d3c;
-            text-decoration: none;
             transition: background-color 0.2s;
         }
 
-        .nav-dropdown-menu a:hover {
+        .nav-dropdown-menu .tooltip-wrapper:hover {
             background-color: #f8f3e9;
-            color: #2c1810;
         }
 
-        .nav-dropdown-menu a:first-child {
+        .nav-dropdown-menu .tooltip-wrapper:first-child {
             border-radius: 8px 8px 0 0;
         }
 
-        .nav-dropdown-menu a:last-child {
+        .nav-dropdown-menu .tooltip-wrapper:last-child {
             border-radius: 0 0 8px 8px;
+        }
+
+        .nav-dropdown-menu a {
+            color: #6b4d3c;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .nav-dropdown-menu .tooltip-wrapper:hover a {
+            color: #2c1810;
+        }
+
+        /* Tooltip Styles */
+        .tooltip-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #6b4d3c;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: help;
+            font-style: italic;
+            font-family: Georgia, serif;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 0.5rem;
+            background: #2c1810;
+            color: #f8f3e9;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            width: 250px;
+            z-index: 1000;
+            transition: opacity 0.2s, visibility 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            line-height: 1.4;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-right-color: #2c1810;
+        }
+
+        .tooltip-wrapper:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
 
         .nav-hamburger {
@@ -239,96 +366,118 @@
             min-height: 400px;
         }
 
-        .featured-content {
+        /* Slideshow Styles */
+        .slideshow-container {
+            position: relative;
             margin-top: 1rem;
         }
 
-        .featured-repo .repo-header h3 {
+        .slideshow-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .slide-btn {
+            background: #6b4d3c;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .slide-btn:hover {
+            background: #2c1810;
+        }
+
+        .slide-indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d4c5b9;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .indicator.active {
+            background: #6b4d3c;
+        }
+
+        .slides-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-header h3 {
             margin: 0 0 1rem 0;
             font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
         }
 
-        .featured-repo .repo-link {
+        .slide-link {
             color: #2c1810;
             text-decoration: none;
             transition: color 0.2s;
         }
 
-        .featured-repo .repo-link:hover {
+        .slide-link:hover {
             color: #6b4d3c;
         }
 
-        .readme-content {
-            max-height: 500px;
-            overflow-y: auto;
+        .slide-content {
             padding: 1rem;
             background: #fff;
             border-radius: 8px;
             line-height: 1.6;
         }
 
-        .readme-content h1,
-        .readme-content h2,
-        .readme-content h3 {
-            font-family: 'Playfair Display', serif;
-            color: #2c1810;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .readme-content h1 { font-size: 1.8rem; }
-        .readme-content h2 { font-size: 1.5rem; }
-        .readme-content h3 { font-size: 1.3rem; }
-
-        .readme-content p {
+        .slide-content p {
             margin-bottom: 1rem;
         }
 
-        .readme-content code {
-            background: #f8f3e9;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-        }
-
-        .readme-content pre {
-            background: #f8f3e9;
-            padding: 1rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            border: 1px solid #d4c5b9;
-        }
-
-        .readme-content pre code {
-            background: none;
-            padding: 0;
-        }
-
-        .readme-content ul, .readme-content ol {
-            margin-bottom: 1rem;
-            padding-left: 2rem;
-        }
-
-        .readme-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .readme-content a {
+        .blog-excerpt {
+            font-style: italic;
             color: #6b4d3c;
-            text-decoration: underline;
         }
 
-        .readme-content a:hover {
+        .cta-link {
+            display: inline-block;
+            color: #6b4d3c;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .cta-link:hover {
             color: #2c1810;
-        }
-
-        .readme-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 1rem 0;
         }
 
         .section-title {
@@ -429,6 +578,81 @@
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
 </head>
 <body>
+    <!-- Decorative Vines -->
+    <svg class="vine-decoration vine-left" viewBox="0 0 150 1000" preserveAspectRatio="xMinYMin slice">
+        <path d="M10,0 Q30,50 20,100 T40,200 T20,300 T50,400 T30,500 T60,600 T40,700 T70,800 T50,900 T80,1000"
+              stroke="#6b8e5f" stroke-width="3" fill="none" opacity="0.6"/>
+        <!-- Leaves -->
+        <ellipse cx="25" cy="80" rx="15" ry="8" fill="#6b8e5f" transform="rotate(45 25 80)"/>
+        <ellipse cx="35" cy="180" rx="12" ry="7" fill="#6b8e5f" transform="rotate(-30 35 180)"/>
+        <ellipse cx="25" cy="280" rx="14" ry="9" fill="#7a9d6e" transform="rotate(60 25 280)"/>
+        <ellipse cx="45" cy="380" rx="13" ry="8" fill="#6b8e5f" transform="rotate(-45 45 380)"/>
+        <ellipse cx="35" cy="480" rx="16" ry="9" fill="#7a9d6e" transform="rotate(30 35 480)"/>
+        <ellipse cx="55" cy="580" rx="14" ry="8" fill="#6b8e5f" transform="rotate(-60 55 580)"/>
+        <ellipse cx="45" cy="680" rx="15" ry="8" fill="#7a9d6e" transform="rotate(45 45 680)"/>
+        <ellipse cx="65" cy="780" rx="12" ry="7" fill="#6b8e5f" transform="rotate(-30 65 780)"/>
+    </svg>
+
+    <svg class="vine-decoration vine-right" viewBox="0 0 150 1000" preserveAspectRatio="xMaxYMin slice">
+        <path d="M140,0 Q120,50 130,100 T110,200 T130,300 T100,400 T120,500 T90,600 T110,700 T80,800 T100,900 T70,1000"
+              stroke="#6b8e5f" stroke-width="3" fill="none" opacity="0.6"/>
+        <!-- Leaves -->
+        <ellipse cx="125" cy="80" rx="15" ry="8" fill="#6b8e5f" transform="rotate(-45 125 80)"/>
+        <ellipse cx="115" cy="180" rx="12" ry="7" fill="#7a9d6e" transform="rotate(30 115 180)"/>
+        <ellipse cx="125" cy="280" rx="14" ry="9" fill="#6b8e5f" transform="rotate(-60 125 280)"/>
+        <ellipse cx="105" cy="380" rx="13" ry="8" fill="#7a9d6e" transform="rotate(45 105 380)"/>
+        <ellipse cx="115" cy="480" rx="16" ry="9" fill="#6b8e5f" transform="rotate(-30 115 480)"/>
+        <ellipse cx="95" cy="580" rx="14" ry="8" fill="#7a9d6e" transform="rotate(60 95 580)"/>
+        <ellipse cx="105" cy="680" rx="15" ry="8" fill="#6b8e5f" transform="rotate(-45 105 680)"/>
+        <ellipse cx="85" cy="780" rx="12" ry="7" fill="#7a9d6e" transform="rotate(30 85 780)"/>
+    </svg>
+
+    <svg class="vine-decoration vine-top-corner-left" viewBox="0 0 200 200">
+        <path d="M0,50 Q30,30 60,40 T120,30 T180,50"
+              stroke="#6b8e5f" stroke-width="4" fill="none" opacity="0.7"/>
+        <path d="M30,0 Q20,30 30,60 T20,120 T40,180"
+              stroke="#6b8e5f" stroke-width="3" fill="none" opacity="0.6"/>
+        <!-- Corner leaves cluster -->
+        <ellipse cx="50" cy="45" rx="18" ry="10" fill="#6b8e5f" transform="rotate(30 50 45)"/>
+        <ellipse cx="65" cy="35" rx="16" ry="9" fill="#7a9d6e" transform="rotate(-20 65 35)"/>
+        <ellipse cx="35" cy="55" rx="14" ry="8" fill="#5f7d53" transform="rotate(60 35 55)"/>
+    </svg>
+
+    <svg class="vine-decoration vine-top-corner-right" viewBox="0 0 200 200">
+        <path d="M200,50 Q170,30 140,40 T80,30 T20,50"
+              stroke="#6b8e5f" stroke-width="4" fill="none" opacity="0.7"/>
+        <path d="M170,0 Q180,30 170,60 T180,120 T160,180"
+              stroke="#6b8e5f" stroke-width="3" fill="none" opacity="0.6"/>
+        <!-- Corner leaves cluster -->
+        <ellipse cx="150" cy="45" rx="18" ry="10" fill="#6b8e5f" transform="rotate(-30 150 45)"/>
+        <ellipse cx="135" cy="35" rx="16" ry="9" fill="#7a9d6e" transform="rotate(20 135 35)"/>
+        <ellipse cx="165" cy="55" rx="14" ry="8" fill="#5f7d53" transform="rotate(-60 165 55)"/>
+    </svg>
+
+    <svg class="vine-decoration vine-bottom-corner-left" viewBox="0 0 250 250">
+        <path d="M0,200 Q40,180 80,190 T160,180 T240,210"
+              stroke="#6b8e5f" stroke-width="4" fill="none" opacity="0.7"/>
+        <path d="M40,250 Q30,210 40,170 T30,110 T50,50"
+              stroke="#6b8e5f" stroke-width="3.5" fill="none" opacity="0.65"/>
+        <!-- Bottom corner leaves cluster -->
+        <ellipse cx="60" cy="195" rx="20" ry="11" fill="#6b8e5f" transform="rotate(45 60 195)"/>
+        <ellipse cx="80" cy="185" rx="18" ry="10" fill="#7a9d6e" transform="rotate(-25 80 185)"/>
+        <ellipse cx="45" cy="210" rx="16" ry="9" fill="#5f7d53" transform="rotate(70 45 210)"/>
+        <ellipse cx="70" cy="175" rx="14" ry="8" fill="#6b8e5f" transform="rotate(-40 70 175)"/>
+    </svg>
+
+    <svg class="vine-decoration vine-bottom-corner-right" viewBox="0 0 250 250">
+        <path d="M250,200 Q210,180 170,190 T90,180 T10,210"
+              stroke="#6b8e5f" stroke-width="4" fill="none" opacity="0.7"/>
+        <path d="M210,250 Q220,210 210,170 T220,110 T200,50"
+              stroke="#6b8e5f" stroke-width="3.5" fill="none" opacity="0.65"/>
+        <!-- Bottom corner leaves cluster -->
+        <ellipse cx="190" cy="195" rx="20" ry="11" fill="#6b8e5f" transform="rotate(-45 190 195)"/>
+        <ellipse cx="170" cy="185" rx="18" ry="10" fill="#7a9d6e" transform="rotate(25 170 185)"/>
+        <ellipse cx="205" cy="210" rx="16" ry="9" fill="#5f7d53" transform="rotate(-70 205 210)"/>
+        <ellipse cx="180" cy="175" rx="14" ry="8" fill="#6b8e5f" transform="rotate(40 180 175)"/>
+    </svg>
+
     <nav class="top-nav">
         <div class="nav-container">
             <a href="/" class="nav-brand">Matthew B. Abbott</a>
@@ -442,15 +666,36 @@
                 <div class="nav-dropdown">
                     <span class="nav-link nav-dropdown-toggle">Projects</span>
                     <div class="nav-dropdown-menu">
-                        <a href="/personal-kb/">Personal Knowledge Base</a>
-                        <a href="/semantic-search/">Embedded Semantic Search</a>
+                        <div class="tooltip-wrapper">
+                            <a href="/terra/">Terra (LLM Webchat)</a>
+                            <span class="info-icon">i</span>
+                            <span class="tooltip">Chat with my personal LLM running on an NVIDIA DGX Spark. Part of my "converse MCP" architecture serving one model to multiple harnesses.</span>
+                        </div>
+                        <div class="tooltip-wrapper">
+                            <a href="/personal-kb/">Personal Knowledge Base</a>
+                            <span class="info-icon">i</span>
+                            <span class="tooltip">A searchable personal wiki for organizing notes, ideas, and knowledge with full-text search.</span>
+                        </div>
+                        <div class="tooltip-wrapper">
+                            <a href="/semantic-search/">Embedded Semantic Search</a>
+                            <span class="info-icon">i</span>
+                            <span class="tooltip">Semantic search powered by embeddings - find relevant content by meaning, not just keywords.</span>
+                        </div>
                     </div>
                 </div>
                 <div class="nav-dropdown">
                     <span class="nav-link nav-dropdown-toggle">Toys</span>
                     <div class="nav-dropdown-menu">
-                        <a href="/dice/">TTRPG Dice Roller</a>
-                        <a href="/oh-hell.html">Oh Hell! Card Game</a>
+                        <div class="tooltip-wrapper">
+                            <a href="/dice/">TTRPG Dice Roller</a>
+                            <span class="info-icon">i</span>
+                            <span class="tooltip">Roll dice for tabletop RPGs. Supports standard notation (2d6, 1d20+5, etc.) with animated results.</span>
+                        </div>
+                        <div class="tooltip-wrapper">
+                            <a href="/oh-hell.html">Oh Hell! Card Game</a>
+                            <span class="info-icon">i</span>
+                            <span class="tooltip">Play the classic trick-taking card game Oh Hell! against AI opponents. Bid on tricks and try to predict exactly how many you'll win.</span>
+                        </div>
                     </div>
                 </div>
                 <a href="#contact" class="nav-link">Contact</a>
@@ -466,15 +711,40 @@
             <div class="content-sections">
                 <div class="section featured-section">
                     <h2 class="section-title">Featured</h2>
-                    <div class="featured-content" id="featured-content">
-                        <div class="featured-repo">
-                            <div class="repo-header">
-                                <a href="https://github.com/matthewabbott/terrarium-agent" target="_blank" class="repo-link">
-                                    <h3>terrarium-agent</h3>
-                                </a>
+                    <div class="slideshow-container">
+                        <div class="slideshow-controls">
+                            <button class="slide-btn prev-btn" aria-label="Previous slide">‹</button>
+                            <div class="slide-indicators"></div>
+                            <button class="slide-btn next-btn" aria-label="Next slide">›</button>
+                        </div>
+
+                        <div class="slides-wrapper">
+                            <!-- Slide 1: Terra Webchat -->
+                            <div class="slide active">
+                                <div class="slide-header">
+                                    <a href="/terra/" class="slide-link">
+                                        <h3>Terra - LLM Webchat</h3>
+                                    </a>
+                                </div>
+                                <div class="slide-content">
+                                    <p>Chat with Terra, my personal LLM running on an NVIDIA DGX Spark. A gated webchat interface that connects to my terrarium-agent server - part of my "converse MCP" architecture where one LLM serves multiple different harnesses.</p>
+                                    <p><strong>Tech Stack:</strong> Express + WebSocket relay, React frontend, Python worker connecting to GLM-4.5-Air-AWQ-4bit via vLLM</p>
+                                    <a href="/terra/" class="cta-link">Try Terra →</a>
+                                </div>
                             </div>
-                            <div id="readme-content" class="readme-content">
-                                <p style="color: #6b4d3c; font-style: italic;">Loading...</p>
+
+                            <!-- Slide 2: Blog Post -->
+                            <div class="slide">
+                                <div class="slide-header">
+                                    <a href="/blog/posts/converse-mcp.html" class="slide-link">
+                                        <h3>The opposite of MCP</h3>
+                                    </a>
+                                </div>
+                                <div class="slide-content">
+                                    <p class="blog-excerpt">I built a little architecture that's the converse of MCP. Rather than serving standard tools to LLMs, I serve a single LLM to a bunch of different tools.</p>
+                                    <p>A deep dive into my terrarium-agent architecture - how I manage multiple AI harnesses (IRC bot, webchat, annotation tools) all sharing one LLM instance on my desktop supercomputer.</p>
+                                    <a href="/blog/posts/converse-mcp.html" class="cta-link">Read full post →</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -556,33 +826,50 @@
                 });
             });
 
-            // Fetch and display README for featured repo
-            async function loadFeaturedReadme() {
-                const readmeContainer = document.getElementById('readme-content');
-                const repo = 'matthewabbott/terrarium-agent';
+            // Slideshow functionality
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const indicatorsContainer = document.querySelector('.slide-indicators');
+            let currentSlide = 0;
 
-                try {
-                    const response = await fetch(`https://api.github.com/repos/${repo}/readme`, {
-                        headers: {
-                            'Accept': 'application/vnd.github.v3.raw'
-                        }
-                    });
+            // Create indicators
+            slides.forEach((_, index) => {
+                const indicator = document.createElement('div');
+                indicator.classList.add('indicator');
+                if (index === 0) indicator.classList.add('active');
+                indicator.addEventListener('click', () => goToSlide(index));
+                indicatorsContainer.appendChild(indicator);
+            });
 
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch README');
-                    }
+            const indicators = document.querySelectorAll('.indicator');
 
-                    const markdown = await response.text();
-                    // Use marked to convert markdown to HTML
-                    const html = marked.parse(markdown);
-                    readmeContainer.innerHTML = html;
-                } catch (error) {
-                    readmeContainer.innerHTML = '<p style="color: #6b4d3c;">Unable to load README. <a href="https://github.com/matthewabbott/terrarium-agent" target="_blank">View on GitHub</a></p>';
-                    console.error('Error loading README:', error);
-                }
+            function showSlide(n) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                indicators.forEach(ind => ind.classList.remove('active'));
+
+                currentSlide = (n + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+                indicators[currentSlide].classList.add('active');
             }
 
-            loadFeaturedReadme();
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+
+            function prevSlide() {
+                showSlide(currentSlide - 1);
+            }
+
+            function goToSlide(n) {
+                showSlide(n);
+            }
+
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+
+            // Auto-advance slideshow every 8 seconds
+            setInterval(nextSlide, 8000);
         });
     </script>
 </body>

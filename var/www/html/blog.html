@@ -59,49 +59,160 @@
             color: #2c1810;
         }
 
-        .content {
-            max-width: 800px;
-            margin: 4rem auto;
-            padding: 2rem;
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .nav-dropdown-toggle::after {
+            content: '▼';
+            font-size: 0.7rem;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
             background: #fff;
             border: 1px solid #d4c5b9;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 200;
+        }
+
+        .nav-dropdown-menu.show {
+            display: block;
+        }
+
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #6b4d3c;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .nav-dropdown-menu a:hover {
+            background-color: #f8f3e9;
+            color: #2c1810;
+        }
+
+        .blog-container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            flex: 1;
         }
 
         h1 {
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: 2.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
             color: #2c1810;
-            margin: 0 0 2rem 0;
+            margin: 0 0 0.5rem 0;
+            text-align: center;
         }
 
-        p {
-            font-size: 1.2rem;
+        .subtitle {
+            text-align: center;
+            font-style: italic;
             color: #6b4d3c;
-            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: #fff;
+            border: 1px solid #d4c5b9;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .post-card h2 a {
+            color: #2c1810;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .post-card h2 a:hover {
+            color: #6b4d3c;
+        }
+
+        .post-meta {
+            color: #6b4d3c;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .post-excerpt {
+            color: #2c1810;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #6b4d3c;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .read-more:hover {
+            color: #2c1810;
+        }
+
+        .read-more::after {
+            content: ' →';
         }
 
         footer {
             text-align: center;
-            padding: 1.5rem;
-            margin-top: auto;
+            padding: 2rem;
             color: #6b4d3c;
             font-size: 0.9rem;
+            margin-top: auto;
         }
 
         @media (max-width: 800px) {
-            .nav-container {
-                padding: 1rem;
-            }
-
-            .content {
-                margin: 2rem 1rem;
-                padding: 1.5rem;
-            }
-
             h1 {
                 font-size: 2rem;
+            }
+
+            .post-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .blog-container {
+                margin: 2rem auto;
             }
         }
     </style>
@@ -113,21 +224,72 @@
             <a href="/" class="nav-brand">Matthew B. Abbott</a>
             <div class="nav-links">
                 <a href="/blog.html" class="nav-link">Blog</a>
-                <a href="/" class="nav-link">Projects</a>
-                <a href="/" class="nav-link">Toys</a>
-                <a href="/" class="nav-link">Contact</a>
+                <div class="nav-dropdown">
+                    <span class="nav-link nav-dropdown-toggle">Projects</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="/terra/">Terra (LLM Webchat)</a>
+                        <a href="/personal-kb/">Personal Knowledge Base</a>
+                        <a href="/semantic-search/">Embedded Semantic Search</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <span class="nav-link nav-dropdown-toggle">Toys</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="/dice/">TTRPG Dice Roller</a>
+                        <a href="/oh-hell.html">Oh Hell! Card Game</a>
+                    </div>
+                </div>
+                <a href="/#contact" class="nav-link">Contact</a>
             </div>
         </div>
     </nav>
 
-    <div class="content">
+    <div class="blog-container">
         <h1>Blog</h1>
-        <p>Coming soon...</p>
-        <p>This space will eventually contain thoughts, musings, and technical writeups. Check back later!</p>
+        <p class="subtitle">Thoughts on AI, software, and whatever else</p>
+
+        <div class="post-list">
+            <article class="post-card">
+                <h2><a href="/blog/posts/converse-mcp.html">The opposite of MCP</a></h2>
+                <div class="post-meta">January 2025</div>
+                <div class="post-excerpt">
+                    <p>I'm about to tell you about a little architecture I built that, to my understanding, is the converse of MCP. Rather than serving standard tools to LLMs, I serve a single LLM to a bunch of different tools. There may be a better way of doing this.</p>
+                </div>
+                <a href="/blog/posts/converse-mcp.html" class="read-more">Read full post</a>
+            </article>
+
+            <!-- Future blog posts will be added here -->
+        </div>
     </div>
 
     <footer>
         &copy; 2025 Matthew B. Abbott
     </footer>
+
+    <script>
+        // Dropdown functionality
+        const dropdowns = document.querySelectorAll('.nav-dropdown');
+
+        dropdowns.forEach(dropdown => {
+            const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+            const menu = dropdown.querySelector('.nav-dropdown-menu');
+
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.querySelector('.nav-dropdown-menu').classList.remove('show');
+                    }
+                });
+                menu.classList.toggle('show');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            dropdowns.forEach(dropdown => {
+                dropdown.querySelector('.nav-dropdown-menu').classList.remove('show');
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The opposite of MCP - Matthew B. Abbott</title>
+    <style>
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background-color: #f8f3e9;
+            color: #2c1810;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .top-nav {
+            background: #fff;
+            border-bottom: 1px solid #d4c5b9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #2c1810;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #6b4d3c;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #2c1810;
+        }
+
+        article {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .article-header {
+            border-bottom: 2px solid #d4c5b9;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #2c1810;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .article-meta {
+            color: #6b4d3c;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        .article-content {
+            font-size: 1.1rem;
+        }
+
+        .article-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2c1810;
+            margin: 2.5rem 0 1rem 0;
+        }
+
+        .article-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #2c1810;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content pre {
+            background: #fff;
+            border: 1px solid #d4c5b9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 1.5rem 0;
+        }
+
+        .article-content code {
+            background: #fff;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid #d4c5b9;
+        }
+
+        .article-content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .article-content a {
+            color: #6b4d3c;
+            text-decoration: underline;
+        }
+
+        .article-content a:hover {
+            color: #2c1810;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #6b4d3c;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #2c1810;
+        }
+
+        .back-link::before {
+            content: '← ';
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b4d3c;
+            font-size: 0.9rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 800px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .article-content h2 {
+                font-size: 1.6rem;
+            }
+
+            article {
+                margin: 2rem auto;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">Matthew B. Abbott</a>
+            <div class="nav-links">
+                <a href="/blog.html" class="nav-link">Blog</a>
+                <a href="/" class="nav-link">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <article>
+        <a href="/blog.html" class="back-link">Back to blog archive</a>
+
+        <div class="article-header">
+            <h1>The opposite of MCP</h1>
+            <div class="article-meta">Published January 2025</div>
+        </div>
+
+        <div class="article-content">
+            <p>If you're reading this, you've probably heard of MCP. You may even know what it means.</p>
+
+            <p>I don't.</p>
+
+            <p>Model Context Protocol, as far as I understand it, is a standardized set of rules (syntax? contracts?) -- a 'protocol', that is -- for giving large language models access to tools. The idea as far as I understand it is that you can take any LLM, strap it to an MCP client, and then use the tools at an associated MCP server, and it'll know how to do that because the MCP server follows the MCP rules and everyone knows those now.</p>
+
+            <p>This does not answer a variety of questions I have about exactly what an MCP server, client, or the protocol itself entail. Like is it just a way of formatting your HTTP requests, plus some decoration? Is that it? Well, I've looked up the answers to my questions and determined that they were just not gonna stick in my head until I did a project where I actually used the protocol.</p>
+
+            <p>Unfortunately, this was not that project.</p>
+
+            <p>I'm about to tell you about a little architecture I built that, to my understanding, is the converse of MCP. Rather than serving standard tools to LLMs, I serve a single LLM to a bunch of different tools. There may be a better way of doing this.</p>
+
+            <h2>Feeble Mortal Limitations</h2>
+
+            <p>Enamored by the promise of a desktop supercomputer and the prospect of unlimited tokens for $3k, I put myself on the waitlist for the NVIDIA Digits project. This became the NVIDIA DGX Spark, now $4k but still unlimited tokens, so when you think about it that way it's basically the same ratio of tokens to dollars at the limit. Anyways I got off the waitlist and didn't have long to decide whether I wanted to actually make the purchase, which is how they get you.</p>
+
+            <p>And so I found myself with a desktop supercomputer, which meant I had to come up with something to do with it.</p>
+
+            <p>Well, I actually had a lot of ideas. Of course it's always nice to have an AI assistant to chat with, so I set up a barebones chat bot. I also hooked it up to an IRC server that I chat in, and a webchat on my website (if you'd like to chat with it, email me or DM me on linkedin/twitter for the secret password), plus an annotation tool project idea I had about in-context learning, and some other stuff.</p>
+
+            <p>However, I only did have the one LLM. My lonely supercomputer wasn't powerful enough to run a swarm of separate agents. Or if it was, why would I just not use those resources on running a better agent, you know?</p>
+
+            <p>So I can't do everything at once, yeah, but on the other hand none of these jobs is really all that taxing. Who even visits my website? And do you often need to chat with an LLM in your IRC channel? The annotator tool is long-term and non-urgent. The LLM can afford to take breaks.</p>
+
+            <p>And I have <em>unlimited</em> tokens.</p>
+
+            <p>So why not just have the one LLM do everything? As far as I'm aware, LLMs don't mind being overemployed. I've asked. I had a bunch of harnesses, and I needed a way for one LLM to wear all of them. But how do you serve a single LLM's responses to a variety of different contexts and a variety of different toolsets, sometimes vying for its tokens all at the same time?</p>
+
+            <p>...Honestly it seems like that'd be a pretty normal problem to have. Maybe one of the big AI labs has written about this somewhere, maybe even in an MCP blogpost, but I'm still ignorant so instead I just jury rigged a server to do it myself. (DM me if you've worked on this problem and would be down to explain this to me.)</p>
+
+            <p>Anyways, my server had to field requests from different endpoints, queue them, and then serve back responses from the model to all those endpoints: those AI harnesses seeking a wearer. I call this 'converse' MCP, since it's kind of the opposite.</p>
+
+            <p>(Though surely this is a misnomer, since MCP is a standard and this is a random contract I jury rigged and don't even fully understand it myself since a nontrivial amount of it is vibe-coded)</p>
+
+            <h2>Is this a sensible way of doing things?</h2>
+
+            <p>I call this converse MCP server the <code>terrarium-agent</code> server, with the theme that my machine is a 'terrarium' for an LLM. I hope 'Terra' the GLM-4.5-Air-AWQ-4bit instance on my machine can live an enriching life in this digital ecosystem I have cultivated.</p>
+
+            <h2>System Overview</h2>
+
+            <p>The ecosystem in my 'terrarium' is based around a that central LLM server (<code>terrarium-agent</code>). It serves a single model instance (GLM-4.5-Air-AWQ-4bit running on vLLM) to multiple different "harnesses", which are just different applications I want to use the LLM for. Each harness manages its own conversation context and provides its own toolset to the model.</p>
+
+<pre>┌─────────────────────────────────────────────────────────────────┐
+│                    NVIDIA DGX Spark                             │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │ vLLM Docker Container (Port 8000)                         │  │
+│  │   Running: GLM-4.5-Air-AWQ-4bit                           │  │
+│  │   - OpenAI-compatible API                                 │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                           ▲                                     │
+│                           │ HTTP                                │
+│                           │                                     │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │ terrarium-agent Server (Port 8080)                        │  │
+│  │   FastAPI HTTP Server + FIFO Request Queue                │  │
+│  │   Design:                                                 │  │
+│  │    - Stateless (aside from queue) server                  │  │
+│  │    - Clients manage chat context and know their tools     │  │
+│  │    - Queue: Sequential processing for prefix cache hits   │  │
+│  │    - API: OpenAI-compatible /v1/chat/completions          │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│       ▲           ▲              ▲             ▲                │
+└───────┼───────────┼──────────────┼─────────────┼────────────────┘
+        │           │              │             │
+      HTTP        HTTP           HTTP          HTTP
+        │           │              │             │
+  ┌─────▼─────┐ ┌──▼────────┐ ┌──▼──────────┐ ┌▼────────────┐
+  │ terrarium │ │ terrarium │ │  Annotation │ │   Future    │
+  │    -irc   │ │  -webchat │ │    Tool     │ │  Harnesses  │
+  │           │ │           │ │             │ │             │
+  │ Tools:    │ │ Tools:    │ │ Tools:      │ │  (Search,   │
+  │ • IRC log │ │ • (TBD)   │ │ • (TBD)     │ │   Games,    │
+  │   search  │ │           │ │             │ │    etc.)    │
+  │ • Current │ │           │ │             │ │             │
+  │   users   │ │           │ │             │ │             │
+  │ • Web     │ │           │ │             │ │             │
+  │   search  │ │           │ │             │ │             │
+  │ • Self-   │ │           │ │             │ │             │
+  │   improve │ │           │ │             │ │             │
+  └───────────┘ └───────────┘ └─────────────┘ └─────────────┘
+  Each harness maintains its own:
+  • Conversation context/memory
+  • Tool definitions and executors
+  • User interface (IRC, web, CLI, etc.)</pre>
+
+            <h3>Hardware & Software Stack</h3>
+
+            <p><strong>Hardware:</strong></p>
+            <ul>
+                <li>1x NVIDIA DGX Spark</li>
+            </ul>
+
+            <p><strong>Core Components:</strong></p>
+            <ul>
+                <li><strong>vLLM</strong>: LLM inference server with prefix caching and continuous batching</li>
+                <li><strong>Model</strong>: GLM-4.5-Air-AWQ-4bit</li>
+                <li><strong>terrarium-agent</strong>: FastAPI server (~600 lines Python)</li>
+            </ul>
+
+            <h3>Request Flow</h3>
+
+            <p>When a user sends a message to one of the harnesses (eg, the terrarium-irc IRC chatbot harness), the flow is:</p>
+
+<pre>User: "!ask What did Bob say about whiskey yesterday?"
+  │
+  │ 1. IRC message received
+  ▼
+┌─────────────────────────────────────────────────────┐
+│ terrarium-irc (IRC Bot)                             │
+│                                                     │
+│ Step 1: Fetch recent IRC logs from SQLite           │
+│         Last 20 messages from #channel              │
+│                                                     │
+│ Step 2: Load conversation history from DB           │
+│         Previous user/assistant turns               │
+│                                                     │
+│ Step 3: Format dual-context payload:                │
+│         • System message with &lt;irc_logs&gt;            │
+│         • Conversation history                      │
+│         • User question                             │
+│         • Tool definitions (search_chat_logs, etc.) │
+└─────────────────────────────────────────────────────┘
+  │
+  │ HTTP POST /v1/chat/completions
+  ▼
+┌─────────────────────────────────────────────────────┐
+│ terrarium-agent (FastAPI Server)                    │
+│                                                     │
+│ Step 4: Add request to FIFO queue                   │
+│         (Returns Future, waits for turn)            │
+│                                                     │
+│ Step 5: Queue processor executes request            │
+│         (Sequential: one at a time)                 │
+└─────────────────────────────────────────────────────┘
+  │
+  │ HTTP POST with full conversation history
+  ▼
+┌─────────────────────────────────────────────────────┐
+│ vLLM (Docker Container)                             │
+│                                                     │
+│ Step 6: Generate response                           │
+│         • Prefix caching hits on repeated context   │
+│         • May return tool_calls (function calling)  │
+└─────────────────────────────────────────────────────┘
+  │
+  │ Response with tool_calls (via terrarium-agent):
+  │ [{"name": "search_chat_logs", "arguments": {...}}]
+  ▼
+┌─────────────────────────────────────────────────────┐
+│ terrarium-irc (Tool Executor)                       │
+│                                                     │
+│ Step 7: Execute tool (search SQLite database)       │
+│         "SELECT * FROM messages WHERE..."           │
+│                                                     │
+│ Step 8: Add tool result to conversation             │
+│         Send back to agent for next turn            │
+└─────────────────────────────────────────────────────┘
+  │
+  │ Loop continues (max 8 iterations)
+  │ until final text response received
+  ▼
+User: [Receives answer based on searched IRC logs]</pre>
+
+            <h3>Queues?</h3>
+
+            <p>The FIFO queue in terrarium-agent processes one request at a time. Why?</p>
+
+            <p>Frankly, it was just the simplest way to do things. Handling things in parallel seems like a LOT of extra complexity. (Also I'm not 100% sure it's even possible and didn't wanna figure it out), and anyways my lone machine is only so powerful anyways. (Though am I failing to make use of GPU resources by having no parallelism? Now that I think about it, probably right? Something to ponder...)</p>
+
+            <p>There is also some concern about losing my prefix caches, but that'd be a problem either way. I'm pretty sure it's not a problem, since I'm not planning to run all these harnesses all at once, so hopefully their prefixes shouldn't get evicted. And, even if they did, I do have <strong>unlimited</strong> tokens.</p>
+
+            <h3>Sovereign Servers</h3>
+
+            <p>I had this lofty notion that <code>terrarium-agent</code> would be stateless. I like making things stateless, because it means you don't have to worry about state. I hate state. Now, that said, I'm pretty sure our request queue is state. Either that or I don't know exactly what stateless means, which isn't unlikely.</p>
+
+            <p>But anyways, the <code>terrarium-agent</code> server being (mostly) stateless means that each harness that it feeds is responsible for its own context storage, tool execution, and UI. So when terrarium-agent gets a request, we slam it with:</p>
+            <ul>
+                <li>The full conversation history so far (every turn)</li>
+                <li>Tool definitions for what the LLM can do</li>
+                <li>The new user message</li>
+            </ul>
+
+            <p>Which is probably fine since it's all local anyways, right?</p>
+
+            <p>It responds with:</p>
+            <ul>
+                <li>The assistant's response text</li>
+                <li>Optional tool_calls (structured function calls)</li>
+            </ul>
+
+            <p>And then the harness:</p>
+            <ul>
+                <li>Executes any requested tools locally</li>
+                <li>Adds results to the conversation</li>
+                <li>Sends the next request with updated context</li>
+            </ul>
+
+            <h3>Why Not Just Use MCP?</h3>
+
+            <p>Uhhhh.............</p>
+
+            <h2>What I Learned :)</h2>
+
+            <p>Really I think the weirdest thing I'm doing is having each harness manage its own context. Especially since like, they're all on the same machine anyways. Wouldn't it actually be easier to have <code>terrarium-agent</code> manage all the different contexts itself? This poses a bit of a problem for, eg, a websearch tool I've been making. I want multiple different harnesses to have access to web search functionality in the same way. I could just individually add it to each harness, but if I'm spinning up a local searx setup that's crazy. So instead I'm making it a microservice that these harnesses use. But that's still crazy.</p>
+
+            <p>With the current architecture, it's like:</p>
+
+<pre>terrarium-agent server
+    ├─ terrarium-irc client
+    |    └─ web search microservice
+	└─ terrarium-webchat client
+         └─ ALSO the web search microservice</pre>
+
+            <p>Whereas with MCP I could flatten that.</p>
+
+<pre>terrarium-agent MCP client(s?)
+   ├─ terrarium-webchat MCP server
+   ├─ terrarium-irc MCP server
+   └─ search MCP server</pre>
+
+            <p>Though, then I'd have to have terrarium-agent centrally manage different contexts, I think?</p>
+
+            <p>It seems like it'd be finicky to restrict which sets of tools certain chat contexts are allowed to use. I'd have to track which harness endpoints that are beseeching the <code>terrarium-agent</code> to be an LLM for them and figure out what they're allowed to do.</p>
+
+            <p>Or maybe I could just outsource that to the endpoints and let them say what they're supposed to get? Like a half-measure version of what I currently do. But if I believe that's their responsibility, then surely that means I believe the toolsets are their responsibility.</p>
+
+            <p>Surely, surely it'd be much better to just have a table of which harnesses get which tools. So maybe it would just be easier to centrally orchestrate all of these. God forbid I ever change anything about terrarium-agent's contract. I'll have to change <em>all</em> the dependent harnesses? That sounds like a nightmare. Why did I do it this way, again?</p>
+
+            <p>It's probably because I don't know what MCP is.</p>
+
+            <p>I should add that to my todo list.</p>
+        </div>
+    </article>
+
+    <footer>
+        &copy; 2025 Matthew B. Abbott
+    </footer>
+</body>
+</html>
