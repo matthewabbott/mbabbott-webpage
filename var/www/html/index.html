@@ -226,6 +226,7 @@
             transition: opacity 0.2s, visibility 0.2s;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             line-height: 1.4;
+            white-space: normal;
         }
 
         .tooltip::before {
@@ -236,6 +237,23 @@
             transform: translateY(-50%);
             border: 6px solid transparent;
             border-right-color: #2c1810;
+        }
+
+        /* Alternative positioning for tooltips near screen edges */
+        @media (min-width: 801px) {
+            .nav-dropdown-menu .tooltip-wrapper:nth-last-child(-n+2) .tooltip {
+                left: auto;
+                right: 100%;
+                margin-left: 0;
+                margin-right: 0.5rem;
+            }
+
+            .nav-dropdown-menu .tooltip-wrapper:nth-last-child(-n+2) .tooltip::before {
+                right: auto;
+                left: 100%;
+                border-right-color: transparent;
+                border-left-color: #2c1810;
+            }
         }
 
         .tooltip-wrapper:hover .tooltip {
