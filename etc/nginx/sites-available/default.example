@@ -1,0 +1,62 @@
+server {
+    server_name mbabbott.com www.mbabbott.com;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~* \.js$ {
+        add_header Content-Type application/javascript;
+    }
+    
+    location /semantic-search {
+        alias /var/www/html/semantic-search;
+        try_files $uri $uri/ /semantic-search/index.html;
+        
+        # Required for WASM
+        add_header Cross-Origin-Opener-Policy "same-origin";
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+    }
+
+    # Specific headers for bin files
+    location ~* \.bin$ {
+        add_header Content-Type application/octet-stream;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+
+    # Specific headers for wasm files
+    location ~* \.wasm$ {
+        add_header Content-Type application/wasm;
+    }
+    
+    # personal-kb application
+    location /personal-kb {
+        alias /var/www/html/personal-kb;
+        try_files $uri $uri/ /personal-kb/index.html;
+        
+        # Handle JavaScript files
+        location ~* \.js$ {
+            add_header Content-Type application/javascript;
+        }
+        
+        # Handle CSS files
+        location ~* \.css$ {
+            add_header Content-Type text/css;
+        }
+    }
+
+    # personal-kb API endpoints
+    location /personal-kb/api/ {
+        proxy_pass http://localhost:3001/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection upgrade;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        
+        # CORS headers if needed
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods GET,
