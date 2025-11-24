@@ -1,0 +1,52 @@
+{
+  "name": "dice-roller",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:prod": "tsc -b && vite build --mode production",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "server": "tsx server.ts --watch",
+    "server:prod": "tsx server.ts"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.13.8",
+    "@graphql-tools/schema": "^10.0.23",
+    "@react-three/drei": "^10.0.8",
+    "@react-three/fiber": "^9.1.2",
+    "@types/uuid": "^10.0.0",
+    "apollo-link-timeout": "^5.0.2",
+    "autoprefixer": "^10.4.21",
+    "cannon-es": "^0.20.0",
+    "graphql": "^16.11.0",
+    "graphql-ws": "^6.0.5",
+    "graphql-yoga": "^5.13.4",
+    "postcss": "^8.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-resizable-panels": "^3.0.2",
+    "three": "^0.176.0",
+    "uuid": "^11.1.0",
+    "tsx": "^4.19.4",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "tailwindcss": "^3.4.16",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
+}

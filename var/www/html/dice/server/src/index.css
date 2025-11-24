@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-brand-background text-brand-text;
+}
+
+@layer components {
+    .card {
+        @apply bg-brand-card rounded-md shadow-lg p-4;
+    }
+
+    .btn-primary {
+        @apply bg-brand-primary text-white px-4 py-2 rounded hover:opacity-90 transition;
+    }
+
+    .btn-secondary {
+        @apply bg-brand-surface text-brand-text px-3 py-1 rounded hover:bg-opacity-80 transition;
+    }
+
+    .input-field {
+        @apply flex-grow px-3 py-2 rounded bg-brand-surface text-brand-text border border-brand-surface focus:outline-none focus:border-brand-primary;
+    }
+}
